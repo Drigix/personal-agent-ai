@@ -1,0 +1,24 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./entrypoint.sh:/entrypoint.sh
+      - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - MODEL=llama3.2
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+
+volumes:
+  ollama_data:
+    name: ollama_data
