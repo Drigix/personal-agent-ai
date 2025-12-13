@@ -1,0 +1,46 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.0.0'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.demo'
+version = '0.0.1-SNAPSHOT'
+description = 'Demo agent ai'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+
+	implementation 'dev.langchain4j:langchain4j-core:1.8.0'
+	implementation 'dev.langchain4j:langchain4j:1.8.0'
+	implementation 'dev.langchain4j:langchain4j-ollama:1.8.0'
+	implementation 'dev.langchain4j:langchain4j-bom:1.8.0'
+
+	implementation 'dev.langchain4j:langchain4j-anthropic-spring-boot-starter:1.8.0-beta15'
+	implementation 'dev.langchain4j:langchain4j-embeddings-all-minilm-l6-v2:1.8.0-beta15'
+
+	compileOnly 'org.projectlombok:lombok'
+//	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: agent-ai
+
+server:
+  port: 8080
+
+
+ollama:
+  model: llama3.2
+  host: http://localhost:11434
+  timeout: 60
+  memory:
+    maxMessage: 20
