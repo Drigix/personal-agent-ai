@@ -1,0 +1,13 @@
+{
+  "buttons": {
+    "newConversation": "Nowa konwersacja",
+    "yes": "Tak",
+    "no": "Nie"
+  },
+  "conversation": {
+    "newTitle": "Nowa konwersacja",
+    "newConversationMessageTemplate": "Napisz co chciałbyś się dowiedzieć lub o co chciałbyś zapytać.",
+    "deleteDialogHeader": "Potwierdzenie usunięcia",
+    "deleteDialogMessage": "Wszystkie wiadomości zostaną utracone. Czy napewno chcesz usunąć wybraną konwersację?"
+  }
+}
