@@ -1,0 +1,73 @@
+<div class="grid page-layout">
+  <!-- LEWA KOLUMNA -->
+  <div class="col-2 flex flex-column h-full conversations-layout">
+    <div class="new-conversation-layout">
+      <p-button icon="pi pi-plus" [label]="'buttons.newConversation' | translate " (onClick)="onAddNewConversationClicked()"></p-button>
+    </div>
+    <div class="conversations-scroll">
+      @for(conversation of conversations(); track conversation.id) {
+        <div
+          class="conversation-container"
+          [ngClass]="{'selected-conversation': selectedConversation()?.id === conversation.id}"
+          (click)="onConversationSelected(conversation)">
+          <span class="text-overflow-ellipsis">{{conversation.title}}</span>
+          <p-button icon="pi pi-trash" (onClick)="onDeleteConversationClicked(conversation?.id!); $event.stopPropagation()"></p-button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- PRAWA KOLUMNA -->
+  <div class="col-10 chat-layout">
+    <!-- CHAT -->
+    <div class="chat-scroll" #chatScrollContainer>
+      @if (isNewConversation()) {
+        <h3 class="grey-text text-center">{{'conversation.newConversationMessageTemplate' | translate }}</h3>
+      } @else {
+      <div class="history-conversation">
+        @for(message of chatHistory(); track message.date) {
+          <div class="flex flex-row"
+               [ngClass]="!!message && message.isUserMessage() ? 'user-message-container' : 'agent-message-container'"
+          >
+            @if (message.isAgentMessage()) {
+              <img src="assets/images/agent-icon.png">
+            }
+            <div
+              class="content-container"
+              >
+              <span>{{message.content}}</span>
+            </div>
+          </div>
+        }
+      </div>
+      }
+
+      <div *isLoading="isLoading()" class="typing">
+        @if (!StringUtils.isEmpty(displayedText())) {
+          <div class="flex flex-row current-message" #currentMessage>
+            <img src="assets/images/agent-icon.png">
+            <div
+              class="content-container"
+            >
+              <span>{{ displayedText() }}</span><span class="cursor">|</span>
+            </div>
+          </div>
+        }
+      </div>
+      <div id="scrollAnchor" #scrollAnchor></div>
+    </div>
+
+    <!-- INPUT -->
+    <div
+      class="chat-input-container"
+      [ngClass]="isNewConversation() ? 'chat-input-container-center' : 'chat-input-container-bottom'"
+    >
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="text"
+        (keyup)="onKeyClick($event)" />
+      <p-button icon="pi pi-chevron-right" (onClick)="onSentClicked()"></p-button>
+    </div>
+  </div>
+</div>
