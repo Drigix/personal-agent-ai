@@ -1,9 +1,14 @@
 spring:
   application:
     name: agent-ai
-data:
   mongodb:
-    url: mongodb://localhost:27017/chat_memory_db
+    uri: mongodb://user:agent123@localhost:27017/chat_memory_db?authSource=admin
+    database: chat_memory_db
+
+logging:
+  level:
+    org.springframework.data.mongodb: DEBUG
+    org.mongodb.driver: DEBUG
 
 server:
   port: 8080
