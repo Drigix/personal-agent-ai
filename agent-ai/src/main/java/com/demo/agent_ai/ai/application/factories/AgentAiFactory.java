@@ -1,6 +1,6 @@
-package com.demo.agent_ai.ai.factories;
+package com.demo.agent_ai.ai.application.factories;
 
-import com.demo.agent_ai.ai.agent.AgentAiApi;
+import com.demo.agent_ai.ai.infrasctructure.AgentAiApi;
 import com.demo.agent_ai.config.OllamaProperties;
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;

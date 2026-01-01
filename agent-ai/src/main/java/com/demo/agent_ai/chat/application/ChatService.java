@@ -1,14 +1,13 @@
-package com.demo.agent_ai.shared.application.impl;
+package com.demo.agent_ai.chat.application;
 
-import com.demo.agent_ai.ai.agent.AgentAiApi;
-import com.demo.agent_ai.shared.application.ChatService;
-import com.demo.agent_ai.ai.factories.AgentAiFactory;
-import com.demo.agent_ai.shared.domain.documents.ChatMessage;
-import com.demo.agent_ai.shared.domain.documents.Conversation;
-import com.demo.agent_ai.shared.domain.enums.ChatMessageRole;
-import com.demo.agent_ai.shared.infrasctructure.repository.ChatMessageRepository;
-import com.demo.agent_ai.shared.infrasctructure.repository.ConversationRepository;
+import com.demo.agent_ai.chat.application.port.out.LlmClient;
+import com.demo.agent_ai.chat.domain.models.ChatMessage;
+import com.demo.agent_ai.chat.domain.models.Conversation;
+import com.demo.agent_ai.chat.domain.enums.ChatMessageRole;
+import com.demo.agent_ai.chat.domain.repository.ChatMessageRepository;
+import com.demo.agent_ai.chat.domain.repository.ConversationRepository;
 import com.demo.agent_ai.web.models.ChatRequestBody;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -16,49 +15,41 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class ChatServiceImpl implements ChatService {
+@AllArgsConstructor
+public class ChatService {
 
-    private final AgentAiFactory agentAiFactory;
+    private final LlmClient llmClient;
     private final ConversationRepository conversationRepository;
     private final ChatMessageRepository chatMessageRepository;
 
-    public ChatServiceImpl(
-        AgentAiFactory agentAiFactory,
-        ConversationRepository conversationRepository,
-        ChatMessageRepository chatMessageRepository
-    ) {
-        this.agentAiFactory = agentAiFactory;
-        this.conversationRepository = conversationRepository;
-        this.chatMessageRepository = chatMessageRepository;
-    }
-
-    @Override
-    public String chat(ChatRequestBody requestBody) {
+    public ChatMessage chat(ChatRequestBody requestBody) {
         try {
-            AgentAiApi agentAiApi = agentAiFactory.createAgentWithMemory();
-            String response = agentAiApi.chat(requestBody.getChatMessage());
-            saveChatMemory(requestBody, response);
-            return response;
+            String response = llmClient.generateResponse(requestBody.getChatMessage());
+            ChatMessage responseBody = saveChatMemory(requestBody, response);
+            return responseBody;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    @Override
     public List<Conversation> getConversations() {
-        return List.of();
+        return conversationRepository.findAll("date", true);
     }
 
-    @Override
     public List<ChatMessage> getChatHistoryByConversationId(String conversationId) {
-        return List.of();
+        return chatMessageRepository.findByConversationId(conversationId);
     }
 
-    private void saveChatMemory(ChatRequestBody requestBody, String response) {
+    public void deleteConversation(String conversationId) {
+        chatMessageRepository.deleteByConversationId(conversationId);
+        conversationRepository.deleteById(conversationId);
+    }
+
+    private ChatMessage saveChatMemory(ChatRequestBody requestBody, String response) {
         String conversationId = requestBody.getConversationId();
         if (!StringUtils.hasText(conversationId)) {
             Conversation newConversation = Conversation.builder()
-                    .title("test")
+                    .title(requestBody.getTitle())
                     .build();
             newConversation = conversationRepository.save(newConversation);
             conversationId = newConversation.getId();
@@ -78,5 +69,6 @@ public class ChatServiceImpl implements ChatService {
                 .content(response)
                 .build();
         newAgentChatMessage = chatMessageRepository.save(newAgentChatMessage);
+        return newAgentChatMessage;
     }
 }

@@ -1,10 +1,10 @@
 package com.demo.agent_ai.web.controllers;
 
+import com.demo.agent_ai.chat.application.ChatService;
 import com.demo.agent_ai.web.mappers.ChatMessageMapper;
 import com.demo.agent_ai.web.mappers.ConversationMapper;
 import com.demo.agent_ai.web.models.ChatMessageResponse;
 import com.demo.agent_ai.web.models.ChatRequestBody;
-import com.demo.agent_ai.shared.application.ChatService;
 import com.demo.agent_ai.web.models.ConversationResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +23,8 @@ public class ChatController {
     private final ChatMessageMapper chatMessageMapper;
 
     @PostMapping("/generateChatRequest")
-    public ResponseEntity<String> generateChatRequest(@RequestBody ChatRequestBody body) {
-        String result = chatService.chat(body);
+    public ResponseEntity<ChatMessageResponse> generateChatRequest(@RequestBody ChatRequestBody body) {
+        ChatMessageResponse result = chatMessageMapper.toModel(chatService.chat(body));
         return ResponseEntity.ok(result);
     }
 
@@ -40,5 +40,13 @@ public class ChatController {
     ) {
         List<ChatMessageResponse> results = chatMessageMapper.toModel(chatService.getChatHistoryByConversationId(conversationId));
         return ResponseEntity.ok(results);
+    }
+
+    @DeleteMapping("/deleteConversation/{conversationId}")
+    public ResponseEntity<String> deleteConversation(
+            @PathVariable("conversationId") String conversationId
+    ) {
+        chatService.deleteConversation(conversationId);
+        return ResponseEntity.noContent().build();
     }
 }

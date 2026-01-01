@@ -1,4 +1,4 @@
-package com.demo.agent_ai.ai.tools;
+package com.demo.agent_ai.ai.infrasctructure.tools;
 
 import dev.langchain4j.agent.tool.Tool;
 

@@ -1,6 +1,6 @@
 package com.demo.agent_ai.web.mappers;
 
-import com.demo.agent_ai.shared.domain.documents.Conversation;
+import com.demo.agent_ai.chat.domain.models.Conversation;
 import com.demo.agent_ai.web.models.ConversationResponse;
 import org.mapstruct.Mapper;
 
