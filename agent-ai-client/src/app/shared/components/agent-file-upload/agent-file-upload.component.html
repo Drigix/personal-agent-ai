@@ -1,0 +1,47 @@
+<p-fileupload name="myfile[]" url="https://www.primefaces.org/cdn/api/upload.php" [multiple]="true" maxFileSize="1000000" (onUpload)="onTemplatedUpload()" (onSelect)="onSelectedFiles($event)">
+  <ng-template #header let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
+    <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
+      <div class="flex gap-2">
+              <i
+                class="pi pi-cloud-upload border-circle text-2xl w-3rem h-3rem bg-primary font-bold flex align-items-center justify-content-center cursor-pointer"
+                (click)="choose($event, chooseCallback)"
+              ></i>
+<!--        <p-button (onClick)="choose($event, chooseCallback)" icon="pi pi-images" [rounded]="true" [outlined]="true" />-->
+<!--        <p-button (onClick)="clearCallback()" icon="pi pi-times" [rounded]="true" [outlined]="true" severity="danger" [disabled]="!files || files.length === 0" />-->
+      </div>
+<!--      <p-progressbar [value]="totalSizePercent" [showValue]="false" class="w-full" class="md:w-20rem h-1 w-full md:ml-auto">-->
+<!--        <span class="whitespace-nowrap">{{ totalSize }}B / 1Mb</span>-->
+<!--      </p-progressbar>-->
+    </div>
+  </ng-template>
+  <ng-template #content let-files let-uploadedFiles="uploadedFiles" let-removeFileCallback="removeFileCallback" let-removeUploadedFileCallback="removeUploadedFileCallback">
+      @if (files?.length > 0) {
+        <div class="file-container flex flex-col gap-8 pt-4">
+          <div class="flex flex-wrap gap-4 align-items-center">
+            @for(file of files; let i = $index; track $index) {
+              <div class="p-2 rounded-border flex flex-col border border-surface items-center gap-4 align-items-center">
+                @if (file?.type.includes('image')) {
+                  <img role="presentation" [alt]="file.name" [src]="file.objectURL" width="100" height="50" />
+                }
+                @if (file?.type.includes('pdf')) {
+                  <i class="pi pi-file-pdf icon-l-size"></i>
+                }
+                <span class="font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden">{{ file.name }}</span>
+                <div>{{ formatSize(file.size) }}</div>
+                <p-button icon="pi pi-times" (click)="onRemoveTemplatingFile($event, file, removeFileCallback, i)" [outlined]="true" [rounded]="true" severity="danger" />
+              </div>
+            }
+          </div>
+        </div>
+      }
+  </ng-template>
+  <ng-template #file></ng-template>
+  <ng-template #empty>
+    <div style="display: none !important;" class="flex justify-content-center flex-row align-items-center pt-3">
+<!--      <i -->
+<!--        class="pi pi-cloud-upload border-circle text-2xl w-3rem h-3rem bg-primary font-bold flex align-items-center justify-content-center"-->
+<!--      ></i>-->
+<!--      <p>Drag and drop files to here to upload.</p>-->
+    </div>
+  </ng-template>
+</p-fileupload>

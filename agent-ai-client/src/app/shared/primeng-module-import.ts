@@ -30,6 +30,10 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TranslateDirective, TranslatePipe} from '@ngx-translate/core';
 import {AgentSpinnerDirective} from './directives/spinner/spinner.directive';
 import {AgentSpinnerComponent} from './directives/spinner/spinner.component';
+import {FileUpload} from 'primeng/fileupload';
+import {AgentFileUploadComponent} from './components/agent-file-upload/agent-file-upload.component';
+import {Badge} from 'primeng/badge';
+import {ProgressBar} from 'primeng/progressbar';
 
 export const COMMON_IMPORTS =
   [CommonModule, RouterModule, TranslateDirective, TranslatePipe, Skeleton];
@@ -55,6 +59,10 @@ export const PRIMENG_MESSAGE_COMPONENTS =
 export const PRIMENG_MISC_COMPONENTS =
   [Avatar, Tag, Skeleton];
 
+export const PRIMENG_FILE_UPLOAD_COMPONENTS = [FileUpload, Badge, ProgressBar];
+
+export const CUSTOM_COMPONENTS = [AgentFileUploadComponent];
+
 export const CUSTOM_DIRECTIVES = [
   AgentSpinnerDirective, AgentSpinnerComponent
-]
+];
