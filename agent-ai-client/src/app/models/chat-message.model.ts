@@ -1,4 +1,5 @@
 import {ChatMessageRole} from './enums/chat-message-role.enum';
+import {FileMetadataModel} from './file-metadata.model';
 
 export class ChatMessageModel {
   constructor(
@@ -6,7 +7,8 @@ export class ChatMessageModel {
     public conversationId?: string,
     public role?: string,
     public date?: Date,
-    public content?: string
+    public content?: string,
+    public fileMetadata?: FileMetadataModel[]
   ) {
   }
 
