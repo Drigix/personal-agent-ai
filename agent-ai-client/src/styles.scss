@@ -9,6 +9,10 @@ $app-danger-color: --p-red-400;
 $app-border-radius: 8px !default;
 $app-container-margin: 8px !default;
 
+$app-small-details-font-size: 12px !default;
+
+$app-icon-l-font-size: 2rem !default;
+
 * {
   font-family: 'Poppins', sans-serif;
 }
@@ -24,25 +28,16 @@ $app-container-margin: 8px !default;
   --p-primary-icon-color: #ffffff !important;
   --p-primary-color: #80f8f8 !important;
   --p-secondary-color: #45c1cc !important;
-  --p-primary-danger-color: var(--p-red-500);
-  //--p-button-primary-background: #659ebf !important;
   --p-button-primary-active-background: #65bcbf !important;
   --p-button-primary-hover-background: #32e1cd !important;
   --p-button-primary-hover-border-color: #65bfb5 !important;
-  //--color-bg-page: #111114;
-  //--bs-body-bg: #111114 !important;
-  //--color-bg-surface: #1E1E22;
-  //--color-bg-surface-alt: #242429;
-  //--color-border: rgba(255,255,255,0.08);
-  //--color-border-strong: rgba(255,255,255,0.14);
-  //--color-text-primary: #FFFFFF;
-  //--p-primary-text-color: #ffffff !important;
-  //--color-text-secondary: #B9BBC4;
-  //--color-accent: #7B5CFF;
-  //--color-accent-hover: #8F71FF;
-  //--color-focus: #FFC543;
+
+  --p-primary-danger-color: var(--p-red-500);
+
   --normal-border-radius: #{$app-border-radius};
   --container-margin: #{$app-container-margin};
+  --small-details-font-size: #{$app-small-details-font-size};
+  --icon-l-font-size: #{$app-icon-l-font-size};
 
   --radius-sm: 4px;
   --radius-md: 10px;
