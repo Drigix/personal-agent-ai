@@ -9,5 +9,9 @@
     "newConversationMessageTemplate": "Napisz co chciałbyś się dowiedzieć lub o co chciałbyś zapytać.",
     "deleteDialogHeader": "Potwierdzenie usunięcia",
     "deleteDialogMessage": "Wszystkie wiadomości zostaną utracone. Czy napewno chcesz usunąć wybraną konwersację?"
+  },
+  "error": {
+    "defaultHeader": "Błąd",
+    "requestError": "Wystąpił błąd podczas przetwarzania zapytania. Spróbuj ponownie."
   }
 }
