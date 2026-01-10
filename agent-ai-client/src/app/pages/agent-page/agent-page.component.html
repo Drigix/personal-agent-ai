@@ -1,5 +1,4 @@
 <div class="grid page-layout">
-  <!-- LEWA KOLUMNA -->
   <div class="col-2 flex flex-column h-full conversations-layout">
     <div class="new-conversation-layout">
       <p-button icon="pi pi-plus" [label]="'buttons.newConversation' | translate " (onClick)="onAddNewConversationClicked()"></p-button>
@@ -17,9 +16,7 @@
     </div>
   </div>
 
-  <!-- PRAWA KOLUMNA -->
   <div class="col-10 chat-layout">
-    <!-- CHAT -->
     <div class="chat-scroll" #chatScrollContainer>
       @if (isNewConversation()) {
         <h3 class="grey-text text-center">{{'conversation.newConversationMessageTemplate' | translate }}</h3>
@@ -35,6 +32,15 @@
             <div
               class="content-container"
               >
+              @if (message?.fileMetadata && message.isUserMessage() && message?.fileMetadata!.length > 0) {
+                <div class="flex flex-row align-items-center">
+                  @for (fileData of message?.fileMetadata; track fileData.filename) {
+                    <i class="pi pi-file-pdf icon-l-size"></i>
+                    <p>{{fileData.filename}}</p>
+                    <p class="file-data-size">({{fileData.size}}MB)</p>
+                  }
+                </div>
+              }
               <span>{{message.content}}</span>
             </div>
           </div>
@@ -57,17 +63,21 @@
       <div id="scrollAnchor" #scrollAnchor></div>
     </div>
 
-    <!-- INPUT -->
     <div
       class="chat-input-container"
       [ngClass]="isNewConversation() ? 'chat-input-container-center' : 'chat-input-container-bottom'"
     >
-      <input
-        type="text"
-        pInputText
-        [(ngModel)]="text"
-        (keyup)="onKeyClick($event)" />
-      <p-button icon="pi pi-chevron-right" (onClick)="onSentClicked()"></p-button>
+      <div class="flex justify-content-center">
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="text"
+          (keyup)="onKeyClick($event)" />
+        <p-button icon="pi pi-chevron-right" (onClick)="onSentClicked()"></p-button>
+      </div>
+      <div class="flex justify-content-center">
+        <agent-file-upload #agentFileUploadComponent></agent-file-upload>
+      </div>
     </div>
   </div>
 </div>

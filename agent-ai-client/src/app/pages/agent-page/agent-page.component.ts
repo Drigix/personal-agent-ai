@@ -8,7 +8,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {
-  COMMON_IMPORTS, CUSTOM_DIRECTIVES,
+  COMMON_IMPORTS, CUSTOM_COMPONENTS, CUSTOM_DIRECTIVES,
   FORMS_IMPORTS,
   PRIMENG_BUTTONS_COMPONENTS,
   PRIMENG_LABEL_COMPONENTS
@@ -21,20 +21,23 @@ import {ChatMessageModel} from '../../models/chat-message.model';
 import {ChatMessageRole} from '../../models/enums/chat-message-role.enum';
 import {TranslateService} from '@ngx-translate/core';
 import {StringUtils} from '../../shared/utils/string.utils';
-import {ConfirmationService} from 'primeng/api';
+import {ConfirmationService, MessageService} from 'primeng/api';
+import {AgentFileUploadComponent} from '../../shared/components/agent-file-upload/agent-file-upload.component';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'agent-page',
   templateUrl: 'agent-page.component.html',
   styleUrls: ['agent-page.component.scss'],
   standalone: true,
-  imports: [...COMMON_IMPORTS, ...FORMS_IMPORTS, ...PRIMENG_LABEL_COMPONENTS, ...PRIMENG_BUTTONS_COMPONENTS, ...CUSTOM_DIRECTIVES],
+  imports: [...COMMON_IMPORTS, ...FORMS_IMPORTS, ...PRIMENG_LABEL_COMPONENTS, ...PRIMENG_BUTTONS_COMPONENTS, ...CUSTOM_DIRECTIVES, ...CUSTOM_COMPONENTS],
   providers: [...CHAT_PROVIDER]
 })
 export class AgentPageComponent implements OnInit {
 
   readonly StringUtils = StringUtils;
 
+  @ViewChild('agentFileUploadComponent') agentFileUploadComponent!: AgentFileUploadComponent;
   @ViewChild('scrollAnchor') scrollAnchor!: ElementRef;
   @ViewChild('chatScrollContainer') chatScrollContainer!: ElementRef;
 
@@ -51,6 +54,7 @@ export class AgentPageComponent implements OnInit {
   private translateService = inject(TranslateService);
   private cd = inject(ChangeDetectorRef);
   private confirmationService = inject(ConfirmationService);
+  private messageService = inject(MessageService);
 
   ngOnInit(): void {
     this.loadConversations();
@@ -107,6 +111,7 @@ export class AgentPageComponent implements OnInit {
       this.selectedConversation.set(newConversation);
       this.isNewConversation.set(false);
     }
+    const newFiles = !!this.agentFileUploadComponent && this.agentFileUploadComponent.files.length > 0 ? this.agentFileUploadComponent.files : null;
     const newChatMessage = new ChatMessageModel(
       undefined, this.selectedConversation()?.id, ChatMessageRole.USER, new Date(), this.text()
     );
@@ -119,7 +124,7 @@ export class AgentPageComponent implements OnInit {
     );
     this.text.set('');
     this.cd.detectChanges();
-    this.chatService.generateChatRequest(chatRequestBody).subscribe({
+    this.chatService.generateChatRequest(chatRequestBody, newFiles).subscribe({
       next: (res: ChatMessageModel) => {
         if (!!this.selectedConversation() && !this.selectedConversation()?.id) {
           this.selectedConversation()!.id = res?.conversationId;
@@ -127,7 +132,14 @@ export class AgentPageComponent implements OnInit {
         this.chatResponseText.set(res?.content!);
         this.typeText(res);
       }, error: err => {
-        console.error(err);
+        const index = this.chatHistory().findIndex(item => item === newChatMessage);
+        this.conversations().splice(index, 1);
+        this.isLoading.set(false);
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translateService.instant('error.defaultHeader'),
+          detail: this.translateService.instant('error.requestError') }
+        );
       },
       complete: () => {
         this.isLoading.set(false);
@@ -139,6 +151,9 @@ export class AgentPageComponent implements OnInit {
     this.chatService.getConversations().subscribe({
       next: (res: ConversationModel[]) => {
         this.conversations.set(res ?? []);
+      },
+      error: err => {
+        this.handleHttpError(err)
       }
     });
   }
@@ -148,6 +163,9 @@ export class AgentPageComponent implements OnInit {
       next: (res: ChatMessageModel[]) => {
         this.chatHistory.set(res ?? []);
         this.scrollToBottom();
+      },
+      error: err => {
+        this.handleHttpError(err)
       }
     });
   }
@@ -162,7 +180,9 @@ export class AgentPageComponent implements OnInit {
           this.conversations().splice(index, 1);
         }
       },
-      error: err => {console.error(err)}
+      error: err => {
+        this.handleHttpError(err)
+      }
     });
   }
 
@@ -200,5 +220,12 @@ export class AgentPageComponent implements OnInit {
     } catch (err) {
       console.error('Scroll error:', err);
     }
+  }
+
+  private handleHttpError(error: HttpErrorResponse) {
+    this.messageService.add({
+      severity: 'error',
+      detail: error.message
+    });
   }
 }
