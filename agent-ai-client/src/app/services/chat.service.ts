@@ -11,11 +11,25 @@ export class ChatService {
   private RESOURCE_URL = 'http://localhost:8080/api/' + 'chatSerivce/';
   private httpClient = inject(HttpClient);
 
-  generateChatRequest(body: ChatRequestBody): Observable<ChatMessageModel> {
+  generateChatRequest(body: ChatRequestBody, files: any[] | null): Observable<ChatMessageModel> {
     const url = this.RESOURCE_URL + "generateChatRequest";
+
+    const formData = new FormData();
+
+    formData.append(
+      'request',
+      new Blob([JSON.stringify(body)], { type: 'application/json' })
+    );
+
+    if (files && files.length > 0) {
+      files.forEach(file => {
+        formData.append('files', file, file.name);
+      });
+    }
+
     return this.httpClient.post<ChatMessageModel>(
       url,
-      body
+      formData
     ).pipe(
       map(msg =>
         new ChatMessageModel(
@@ -23,7 +37,8 @@ export class ChatService {
           msg.conversationId,
           msg.role,
           msg.date ?  new Date(msg.date) : undefined,
-          msg.content
+          msg.content,
+          msg.fileMetadata
         )
       ));
   }
@@ -49,7 +64,8 @@ export class ChatService {
           msg.conversationId,
           msg.role,
           msg.date ?  new Date(msg.date) : undefined,
-          msg.content
+          msg.content,
+          msg.fileMetadata
         )
       ))
     );
