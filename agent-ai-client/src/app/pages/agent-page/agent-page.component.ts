@@ -24,6 +24,7 @@ import {StringUtils} from '../../shared/utils/string.utils';
 import {ConfirmationService, MessageService} from 'primeng/api';
 import {AgentFileUploadComponent} from '../../shared/components/agent-file-upload/agent-file-upload.component';
 import {HttpErrorResponse} from '@angular/common/http';
+import {FileMetadataModel} from '../../models/file-metadata.model';
 
 @Component({
   selector: 'agent-page',
@@ -113,7 +114,7 @@ export class AgentPageComponent implements OnInit {
     }
     const newFiles = !!this.agentFileUploadComponent && this.agentFileUploadComponent.files.length > 0 ? this.agentFileUploadComponent.files : null;
     const newChatMessage = new ChatMessageModel(
-      undefined, this.selectedConversation()?.id, ChatMessageRole.USER, new Date(), this.text()
+      undefined, this.selectedConversation()?.id, ChatMessageRole.USER, new Date(), this.text(), this.prepareFilemetadata(newFiles)
     );
     this.chatHistory().push(newChatMessage);
     this.isLoading.set(true);
@@ -126,6 +127,7 @@ export class AgentPageComponent implements OnInit {
     this.cd.detectChanges();
     this.chatService.generateChatRequest(chatRequestBody, newFiles).subscribe({
       next: (res: ChatMessageModel) => {
+        this.agentFileUploadComponent.clearFiles();
         if (!!this.selectedConversation() && !this.selectedConversation()?.id) {
           this.selectedConversation()!.id = res?.conversationId;
         }
@@ -175,6 +177,7 @@ export class AgentPageComponent implements OnInit {
     this.chatService.deleteConversation(conversationId).subscribe({
       next: () => {
         if (conversationToDelete) {
+          this.chatHistory.set([]);
           this.isNewConversation.set(true);
           const index = this.conversations().findIndex(conversation => conversation.id === conversationId);
           this.conversations().splice(index, 1);
@@ -188,6 +191,17 @@ export class AgentPageComponent implements OnInit {
 
   private prepareTitle(content: string): string {
     return content.length > 20 ? `${content.substring(0, 20)}...` : content;
+  }
+
+  private prepareFilemetadata(files: File[] | null): FileMetadataModel[] {
+    if (!files || !files.length || files.length === 0) {
+      return [];
+    }
+    const fileMetadata: FileMetadataModel[] = [];
+    files.forEach(file => {
+      fileMetadata.push(new FileMetadataModel(file.name, this.agentFileUploadComponent.roundFileSizeToMb(file.size), file.type));
+    });
+    return fileMetadata;
   }
 
   private typeText(chatMessage: ChatMessageModel) {

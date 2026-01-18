@@ -1,18 +1,21 @@
-import {Component, inject} from '@angular/core';
-import {COMMON_IMPORTS, PRIMENG_BUTTONS_COMPONENTS, PRIMENG_FILE_UPLOAD_COMPONENTS} from '../../primeng-module-import';
+import {Component, ElementRef, inject, ViewChild} from '@angular/core';
+import {PRIMENG_BUTTONS_COMPONENTS, PRIMENG_FILE_UPLOAD_COMPONENTS} from '../../primeng-module-import';
 import {PrimeNG} from 'primeng/config';
 import {MessageService} from 'primeng/api';
 import {MESSAGES_PROVIDER} from '../../../services/service-provider-import';
+import {FileUpload} from 'primeng/fileupload';
 
 @Component({
   selector: 'agent-file-upload',
   templateUrl: 'agent-file-upload.component.html',
   styleUrls: ['./agent-file-upload.component.scss'],
   standalone: true,
-  imports: [COMMON_IMPORTS, PRIMENG_FILE_UPLOAD_COMPONENTS, PRIMENG_BUTTONS_COMPONENTS],
+  imports: [PRIMENG_FILE_UPLOAD_COMPONENTS, PRIMENG_BUTTONS_COMPONENTS],
   providers: [MESSAGES_PROVIDER]
 })
 export class AgentFileUploadComponent {
+
+  @ViewChild('fileUploadComponent') fileUploadComponent!: FileUpload;
 
   files: File[] = [];
   totalSize : number = 0;
@@ -60,15 +63,25 @@ export class AgentFileUploadComponent {
 
   formatSize(bytes: any): string {
     const k = 1024;
-    const dm = 3;
     const sizes = this.config.translation.fileSizeTypes;
     if (bytes === 0) {
       return `0 ${sizes![0]}`;
     }
 
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    const formattedSize = parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
 
-    return `${formattedSize} ${sizes![i]}`;
+    return `${this.roundFileSizeToMb(bytes)} ${sizes![i]}`;
+  }
+
+  roundFileSizeToMb(bytes: number): number {
+    const k = 1024;
+    const dm = 3;
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
+  }
+
+  clearFiles(): void {
+    this.files = [];
+    this.fileUploadComponent.clear();
   }
 }
