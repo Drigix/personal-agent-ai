@@ -1,5 +1,6 @@
 package com.demo.agent_ai.knowledge.application;
 
+import com.demo.agent_ai.ai.application.port.in.EmbeddingPort;
 import com.demo.agent_ai.knowledge.application.port.in.KnowledgeIngestPort;
 import com.demo.agent_ai.knowledge.domain.models.KnowledgeChunk;
 import com.demo.agent_ai.knowledge.domain.models.KnowledgeDocument;
@@ -23,6 +24,7 @@ public class KnowledgeIngestService implements KnowledgeIngestPort {
     private final PdfTextExtractor pdfTextExtractor;
     private final KnowledgeDocumentRepository knowledgeDocumentRepository;
     private final KnowledgeChunkRepository knowledgeChunkRepository;
+    private final EmbeddingPort embeddingPort;
 
     @Override
     public String ingestFiles(String conversationId, List<UploadedFile> files, String chatMessage) {

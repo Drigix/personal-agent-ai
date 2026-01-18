@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Setter
 public class OllamaProperties {
     private String model;
+    private String embeddingModel;
     private String host;
     private Integer timeout;
 }
