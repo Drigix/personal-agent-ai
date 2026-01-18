@@ -15,18 +15,18 @@ import java.util.List;
 @Component
 public class AgentMemoryLoader {
 
-    public ChatMemory loadMemory(List<ChatMessage> messages, String knowledgeContext) {
+    public ChatMemory loadMemory(List<ChatMessage> messages) {
         ChatMemory memory = MessageWindowChatMemory.withMaxMessages(50);
-        if (StringUtils.hasText(knowledgeContext)) {
-            memory.add(SystemMessage.from(knowledgeContext));
+
+        if (messages != null && !messages.isEmpty()) {
+            messages.forEach(m -> {
+                if (ChatMessageRole.USER.getChatMessageRole().equalsIgnoreCase(m.getRole().getChatMessageRole())) {
+                    memory.add(UserMessage.from(m.getContent()));
+                } else if (ChatMessageRole.AGENT.getChatMessageRole().equalsIgnoreCase(m.getRole().getChatMessageRole())) {
+                    memory.add(AiMessage.from(m.getContent()));
+                }
+            });
         }
-        messages.forEach(m -> {
-            if (ChatMessageRole.USER.getChatMessageRole().equalsIgnoreCase(m.getRole().getChatMessageRole())) {
-                memory.add(UserMessage.from(m.getContent()));
-            } else if (ChatMessageRole.AGENT.getChatMessageRole().equalsIgnoreCase(m.getRole().getChatMessageRole())) {
-                memory.add(AiMessage.from(m.getContent()));
-            }
-        });
 
         return memory;
     }
