@@ -1,7 +1,10 @@
 <div class="grid page-layout">
-  <div class="col-2 flex flex-column h-full conversations-layout">
+  <div class="flex flex-column h-full conversations-layout" [ngClass]="{'conversations-layout-menu-hidden': isMenuHide()}">
+    <div class="menu-icon" [ngClass]="{'justify-content-end': !isMenuHide(), 'menu-icon-hidden justify-content-center': isMenuHide()}">
+      <p-button icon="pi pi-bars" (onClick)="changeMenu()"></p-button>
+    </div>
     <div class="new-conversation-layout">
-      <p-button icon="pi pi-plus" [label]="'buttons.newConversation' | translate " (onClick)="onAddNewConversationClicked()"></p-button>
+      <p-button icon="pi pi-plus" [label]="isMenuHide() ? '' : ('buttons.newConversation' | translate)" (onClick)="onAddNewConversationClicked()"></p-button>
     </div>
     <div class="conversations-scroll">
       @for(conversation of conversations(); track conversation.id) {
@@ -16,7 +19,7 @@
     </div>
   </div>
 
-  <div class="col-10 chat-layout">
+  <div class="chat-layout">
     <div class="chat-scroll" #chatScrollContainer>
       @if (isNewConversation()) {
         <h3 class="grey-text text-center">{{'conversation.newConversationMessageTemplate' | translate }}</h3>
@@ -65,7 +68,7 @@
 
     <div
       class="chat-input-container"
-      [ngClass]="isNewConversation() ? 'chat-input-container-center' : 'chat-input-container-bottom'"
+      [ngClass]="{'chat-input-container-center': isNewConversation(), 'chat-input-container-bottom': !isNewConversation(), 'chat-input-container-menu-hidden': isMenuHide()}"
     >
       <div class="flex justify-content-center">
         <input
@@ -75,7 +78,7 @@
           (keyup)="onKeyClick($event)" />
         <p-button icon="pi pi-chevron-right" (onClick)="onSentClicked()"></p-button>
       </div>
-      <div class="flex justify-content-center">
+      <div class="file-upload-container">
         <agent-file-upload #agentFileUploadComponent></agent-file-upload>
       </div>
     </div>

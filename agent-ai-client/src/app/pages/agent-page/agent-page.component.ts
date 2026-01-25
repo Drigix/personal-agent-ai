@@ -42,6 +42,7 @@ export class AgentPageComponent implements OnInit {
   @ViewChild('scrollAnchor') scrollAnchor!: ElementRef;
   @ViewChild('chatScrollContainer') chatScrollContainer!: ElementRef;
 
+  isMenuHide = signal<boolean>(false);
   isNewConversation = signal<boolean>(true);
   conversations = signal<ConversationModel[]>([]);
   selectedConversation = signal<ConversationModel | undefined>(undefined);
@@ -59,6 +60,10 @@ export class AgentPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadConversations();
+  }
+
+  changeMenu(): void {
+    this.isMenuHide.set(!this.isMenuHide());
   }
 
   onAddNewConversationClicked(): void {
