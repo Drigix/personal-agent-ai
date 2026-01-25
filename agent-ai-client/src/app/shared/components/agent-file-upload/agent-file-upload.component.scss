@@ -2,7 +2,21 @@
 //  display: none;
 //}
 
+:host ::ng-deep .p-fileupload-content {
+  padding: 0px;
+  width: 100%;
+}
+
 .file-container {
-  max-height: 100px;
+  width: 100%;
   overflow: auto;
+
+  position: fixed;
+  bottom: 115%;
+  left: 2%;
+}
+
+.single-file-container {
+  border: 1px solid var(--p-button-primary-hover-border-color);
+  border-radius: var(--normal-border-radius);
 }

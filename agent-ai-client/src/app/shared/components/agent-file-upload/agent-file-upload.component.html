@@ -3,7 +3,7 @@
     <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
       <div class="flex gap-2">
               <i
-                class="pi pi-cloud-upload border-circle text-2xl w-3rem h-3rem bg-primary font-bold flex align-items-center justify-content-center cursor-pointer"
+                class="pi pi-cloud-upload border-circle text-xl w-3rem h-3rem bg-primary font-bold flex align-items-center justify-content-center cursor-pointer"
                 (click)="choose($event, chooseCallback)"
               ></i>
 <!--        <p-button (onClick)="choose($event, chooseCallback)" icon="pi pi-images" [rounded]="true" [outlined]="true" />-->
@@ -16,10 +16,10 @@
   </ng-template>
   <ng-template #content let-files let-uploadedFiles="uploadedFiles" let-removeFileCallback="removeFileCallback" let-removeUploadedFileCallback="removeUploadedFileCallback">
       @if (files?.length > 0) {
-        <div class="file-container flex flex-col gap-8 pt-4">
+        <div class="file-container flex flex-col gap-8">
           <div class="flex flex-wrap gap-4 align-items-center">
             @for(file of files; let i = $index; track $index) {
-              <div class="p-2 rounded-border flex flex-col border border-surface items-center gap-4 align-items-center">
+              <div class="single-file-container p-2 rounded-border flex flex-col border border-surface items-center gap-4 align-items-center">
                 @if (file?.type.includes('image')) {
                   <img role="presentation" [alt]="file.name" [src]="file.objectURL" width="100" height="50" />
                 }
