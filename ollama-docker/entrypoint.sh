@@ -14,6 +14,11 @@ done
 echo "Pull model: ${MODEL}"
 ollama pull "${MODEL}"
 
-echo "${MODEL} has been pulled. Server already works."
+echo "${MODEL} has been pulled."
+
+echo "Pull embedding model: ${EMBEDDING_MODEL}"
+ollama pull "${EMBEDDING_MODEL}"
+
+echo "${EMBEDDING_MODEL} has been pulled. Server already works."
 
 wait "$SERVER_PID"

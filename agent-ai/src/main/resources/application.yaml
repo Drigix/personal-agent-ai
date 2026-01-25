@@ -18,6 +18,7 @@ client:
 
 ollama:
   model: llama3.2
+  embeddingModel: nomic-embed-text
   host: http://localhost:11434
   timeout: 60
   memory:
