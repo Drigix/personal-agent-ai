@@ -11,7 +11,7 @@ public interface KnowledgeIngestPort {
             String chatMessage
     );
 
-    String getConversationKnowledgeContext(String conversationId);
+    String getConversationKnowledgeContext(String conversationId, String question);
 
     void deleteKnowledgeByConversationId(String conversationId);
 }

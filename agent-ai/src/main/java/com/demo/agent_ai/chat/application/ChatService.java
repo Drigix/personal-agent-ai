@@ -83,7 +83,7 @@ public class ChatService {
         if (files != null && !files.isEmpty()) {
             knowledgeIngestPort.ingestFiles(conversationId, files, requestBody.getChatMessage());
         }
-        String conversationKnowledgeContext = knowledgeIngestPort.getConversationKnowledgeContext(conversationId);
+        String conversationKnowledgeContext = knowledgeIngestPort.getConversationKnowledgeContext(conversationId,requestBody.getChatMessage());
         String response = llmClient.generateResponse(historyContexts, conversationKnowledgeContext, requestBody.getChatMessage());
         ChatMessage responseBody = saveChatMemory(requestBody, files, response);
         return responseBody;

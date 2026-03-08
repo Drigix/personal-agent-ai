@@ -8,13 +8,12 @@ import com.demo.agent_ai.knowledge.domain.models.UploadedFile;
 import com.demo.agent_ai.knowledge.domain.repository.KnowledgeChunkRepository;
 import com.demo.agent_ai.knowledge.domain.repository.KnowledgeDocumentRepository;
 import com.demo.agent_ai.knowledge.infrastructure.pdf.PdfTextExtractor;
+import com.demo.agent_ai.knowledge.infrastructure.similarity.SimilaritySearch;
+import com.demo.agent_ai.knowledge.infrastructure.text.TextChunker;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +24,8 @@ public class KnowledgeIngestService implements KnowledgeIngestPort {
     private final KnowledgeDocumentRepository knowledgeDocumentRepository;
     private final KnowledgeChunkRepository knowledgeChunkRepository;
     private final EmbeddingPort embeddingPort;
+    private final TextChunker textChunker;
+    private final SimilaritySearch similaritySearch;
 
     @Override
     public String ingestFiles(String conversationId, List<UploadedFile> files, String chatMessage) {
@@ -45,13 +46,18 @@ public class KnowledgeIngestService implements KnowledgeIngestPort {
                             .build()
             );
 
-            List<String> chunks = chunk(normalized, 500);
+            List<String> chunks = textChunker.chunk(normalized);
+
             for (String chunk : chunks) {
+                float[] embedding = embeddingPort.embed(chunk);
+
                 KnowledgeChunk newKnowledgeChunk = knowledgeChunkRepository.save(
                         KnowledgeChunk.builder()
                                 .documentId(document.getId())
                                 .conversationId(conversationId)
                                 .content(chunk)
+                                .embedding(embedding)
+                                .tokenCount(chunk.length() / 4)
                                 .build()
                 );
                 savedKnowledgeChunks.add(newKnowledgeChunk);
@@ -61,12 +67,24 @@ public class KnowledgeIngestService implements KnowledgeIngestPort {
     }
 
     @Override
-    public String getConversationKnowledgeContext(String conversationId) {
+    public String getConversationKnowledgeContext(String conversationId, String question) {
         List<KnowledgeChunk> knowledgeChunks = knowledgeChunkRepository.findAllByConversationId(conversationId);
         if (knowledgeChunks == null || knowledgeChunks.isEmpty()) {
             return null;
         }
-        return buildKnowledgeContext(knowledgeChunks);
+        int topK = 5;
+        float[] queryEmbedding = embeddingPort.embed(question);
+        List<KnowledgeChunk> relevantKnowledgeChunks = knowledgeChunks
+                .stream()
+                .map(chunk -> Map.entry(
+                        chunk,
+                        similaritySearch.cosine(queryEmbedding, chunk.getEmbedding())
+                ))
+                .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
+                .limit(topK)
+                .map(Map.Entry::getKey)
+                .toList();
+        return buildKnowledgeContext(relevantKnowledgeChunks);
     }
 
     @Override
@@ -76,31 +94,17 @@ public class KnowledgeIngestService implements KnowledgeIngestPort {
     }
 
     private String buildKnowledgeContext(List<KnowledgeChunk> chunks) {
-
         return """
-        You have access to the following reference materials provided by the user.
-        Use them if relevant. Do not invent facts beyond them.
-    
-        --- KNOWLEDGE START ---
-        %s
-        --- KNOWLEDGE END ---
-        """.formatted(
-                    chunks.stream()
-                            .map(KnowledgeChunk::getContent)
-                            .collect(Collectors.joining("\n\n"))
+            Use ONLY the following context to answer the question.
+            If the answer is not present, say you do not know.
+        
+            --- CONTEXT ---
+            %s
+            --- END ---
+            """.formatted(
+                chunks.stream()
+                        .map(KnowledgeChunk::getContent)
+                        .collect(Collectors.joining("\n\n"))
         );
-    }
-
-    private List<String> chunk(String text, int maxChars) {
-        List<String> chunks = new ArrayList<>();
-        int start = 0;
-
-        while (start < text.length()) {
-            int end = Math.min(text.length(), start + maxChars);
-            chunks.add(text.substring(start, end));
-            start = end;
-        }
-
-        return chunks;
     }
 }
