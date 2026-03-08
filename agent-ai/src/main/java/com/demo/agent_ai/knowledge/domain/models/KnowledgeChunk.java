@@ -25,5 +25,7 @@ public class KnowledgeChunk {
 
     private String content;
 
-    // private float[] embedding;
+    private float[] embedding;
+
+    private int tokenCount;
 }
