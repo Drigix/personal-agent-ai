@@ -12,6 +12,7 @@ import {provideTranslateService} from '@ngx-translate/core';
 import {provideHttpClient} from '@angular/common/http';
 import {providePrimeNG} from 'primeng/config';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
+import {provideMarkdown} from 'ngx-markdown';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -33,6 +34,7 @@ export const appConfig: ApplicationConfig = {
         suffix: '.json'
       })
     }),
-    { provide: LOCALE_ID, useValue: 'pl' }
+    { provide: LOCALE_ID, useValue: 'pl' },
+    provideMarkdown()
   ]
 };
