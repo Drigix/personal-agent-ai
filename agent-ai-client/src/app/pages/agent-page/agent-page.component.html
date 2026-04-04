@@ -44,7 +44,7 @@
                   }
                 </div>
               }
-              <span>{{message.content}}</span>
+              <markdown [data]="message.content || ''"></markdown>
             </div>
           </div>
         }
@@ -55,10 +55,9 @@
         @if (!StringUtils.isEmpty(displayedText())) {
           <div class="flex flex-row current-message" #currentMessage>
             <img src="assets/images/agent-icon.png">
-            <div
-              class="content-container"
-            >
-              <span>{{ displayedText() }}</span><span class="cursor">|</span>
+            <div class="content-container markdown-body">
+              <markdown [data]="displayedText()"></markdown>
+              <span class="cursor">|</span>
             </div>
           </div>
         }

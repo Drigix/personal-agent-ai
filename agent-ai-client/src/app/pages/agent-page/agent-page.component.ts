@@ -25,13 +25,14 @@ import {ConfirmationService, MessageService} from 'primeng/api';
 import {AgentFileUploadComponent} from '../../shared/components/agent-file-upload/agent-file-upload.component';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FileMetadataModel} from '../../models/file-metadata.model';
+import {MarkdownComponent} from 'ngx-markdown';
 
 @Component({
   selector: 'agent-page',
   templateUrl: 'agent-page.component.html',
   styleUrls: ['agent-page.component.scss'],
   standalone: true,
-  imports: [...COMMON_IMPORTS, ...FORMS_IMPORTS, ...PRIMENG_LABEL_COMPONENTS, ...PRIMENG_BUTTONS_COMPONENTS, ...CUSTOM_DIRECTIVES, ...CUSTOM_COMPONENTS],
+  imports: [...COMMON_IMPORTS, ...FORMS_IMPORTS, ...PRIMENG_LABEL_COMPONENTS, ...PRIMENG_BUTTONS_COMPONENTS, ...CUSTOM_DIRECTIVES, ...CUSTOM_COMPONENTS, MarkdownComponent],
   providers: [...CHAT_PROVIDER]
 })
 export class AgentPageComponent implements OnInit {
@@ -69,6 +70,7 @@ export class AgentPageComponent implements OnInit {
   onAddNewConversationClicked(): void {
     this.isNewConversation.set(true);
     this.selectedConversation.set(undefined);
+    this.chatHistory.set([]);
   }
 
   onConversationSelected(conversation: ConversationModel) {
