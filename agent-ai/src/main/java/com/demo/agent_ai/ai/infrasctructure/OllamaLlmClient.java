@@ -1,6 +1,7 @@
 package com.demo.agent_ai.ai.infrasctructure;
 
 import com.demo.agent_ai.ai.application.factories.AgentAiFactory;
+import com.demo.agent_ai.ai.infrasctructure.formatters.AgentResponseFormatter;
 import com.demo.agent_ai.chat.application.port.out.LlmClient;
 import com.demo.agent_ai.chat.domain.models.ChatMessage;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import java.util.List;
 public class OllamaLlmClient implements LlmClient {
 
     private final AgentAiFactory agentAiFactory;
+    private final AgentResponseFormatter agentResponseFormatter;
 
     @Override
     public String generateResponse(
@@ -21,6 +23,7 @@ public class OllamaLlmClient implements LlmClient {
             String context
     ) {
         AgentAiApi agentAiApi = agentAiFactory.createAgentWithMemory(historyContext, conversationKnowledgeContext);
-        return agentAiApi.chat(context);
+        String rawResponse = agentAiApi.chat(context);
+        return agentResponseFormatter.normalize(rawResponse);
     }
 }

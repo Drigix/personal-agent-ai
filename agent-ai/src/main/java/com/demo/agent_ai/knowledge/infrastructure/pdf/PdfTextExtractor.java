@@ -17,7 +17,8 @@ public class PdfTextExtractor {
     public String extract(UploadedFile file) {
         try (PDDocument document = Loader.loadPDF(file.getContent())) {
             PDFTextStripper stripper = new PDFTextStripper();
-                return stripper.getText(document);
+            stripper.setSortByPosition(true);
+            return stripper.getText(document);
         } catch (IOException e) {
             throw new RuntimeException("Cannot parse PDF", e);
         }
@@ -28,22 +29,35 @@ public class PdfTextExtractor {
             return "";
         }
 
-        return text
-                // normalize end of the lines
+        String normalized = text
+                // Unification ENTER signs 
                 .replace("\r\n", "\n")
                 .replace("\r", "\n")
+                // Delete lines that consist only of digits (page numbers) or common footer/header patterns
+                .replaceAll("(?m)^\\s*\\d+\\s*$", "")
+                // Delete non-printable characters
+                .replaceAll("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]", "")
+                // Replace multiple spaces/tabs with a single space
+                .replaceAll("[ \t]+", " ");
 
-                // delete many tabs and spaces
-                .replaceAll("[ \t]+", " ")
+        // HEURISTIC FOR JOINING LINES:
+        // If a line ends with a letter/comma and the next line starts with a lowercase letter,
+        // it's likely one sentence broken in half.
+        // We replace: "word\ncontinuation" -> "word continuation"
+        // But we keep: "End.\nNew" -> "End.\nNew"
 
-                // reduction of empty lines
-                .replaceAll("\n{3,}", "\n\n")
+        // Step 1: Replace multiple (2 or more) newlines with a temporary token
+        normalized = normalized.replaceAll("\n{2,}", "||PARAGRAPH||");
 
-                // delete spaces in start and end of the line
-                .replaceAll("(?m)^\\s+|\\s+$", "")
+        // Step 2: Replace single newlines that are likely to be line breaks within sentences with spaces
+        // (we assume that if there is no ||PARAGRAPH||, then it was a single \n)
+        normalized = normalized.replace("\n", " ");
 
-                // trim all
-                .trim();
+        // Krok 3: Przywróć akapity (zamień token na \n\n)
+        // Step 3: Restore paragraphs (replace token with \n\n)
+        normalized = normalized.replace("||PARAGRAPH||", "\n\n");
+
+        return normalized.trim();
     }
 
     public String hash(String text) {
