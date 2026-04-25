@@ -133,7 +133,7 @@ public class ChatService {
     ) {
         ChatMessage chatMessage = ChatMessage.builder()
                 .conversationId(conversationId)
-                .date(date)
+                .date(date.toInstant())
                 .role(role)
                 .content(content)
                 .fileMetadata(fileMetadata)

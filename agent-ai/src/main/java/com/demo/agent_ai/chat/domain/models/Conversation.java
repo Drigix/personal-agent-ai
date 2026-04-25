@@ -7,9 +7,10 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
+import java.time.Instant;
 
 @Document(collection = "conversations")
 @Getter
@@ -25,5 +26,5 @@ public class Conversation {
     private String title;
 
     @CreatedDate
-    private Date date;
+    private Instant date;
 }

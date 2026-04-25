@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 @Document(collection = "chat_messages")
@@ -28,7 +28,7 @@ public class ChatMessage {
 
     private ChatMessageRole role;
 
-    private Date date;
+    private Instant date;
 
     private String content;
 
