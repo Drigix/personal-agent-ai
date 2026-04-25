@@ -33,7 +33,7 @@ public class AgentAiFactory {
                 .build();
         this.embeddingModel = OllamaEmbeddingModel.builder()
                 .baseUrl(ollamaProperties.getHost())
-                .modelName(ollamaProperties.getModel())
+                .modelName(ollamaProperties.getEmbeddingModel())
                 .timeout(java.time.Duration.ofSeconds(ollamaProperties.getTimeout()))
                 .build();
     }
@@ -45,12 +45,11 @@ public class AgentAiFactory {
                 .build();
     }
 
-    public AgentAiApi createAgentWithMemory(List<ChatMessage> history, String knowledgeContext) {
+    public AgentAiApi createAgentWithMemory(List<ChatMessage> history) {
         ChatMemory memory = agentMemoryLoader.loadMemory(history);
         return AiServices.builder(AgentAiApi.class)
                 .chatModel(this.chatModel)
                 .chatMemory(memory)
-                .systemMessageProvider(memoryId -> knowledgeContext)
                 .build();
     }
 

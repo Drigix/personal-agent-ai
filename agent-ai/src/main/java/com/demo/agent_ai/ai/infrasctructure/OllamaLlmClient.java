@@ -22,8 +22,19 @@ public class OllamaLlmClient implements LlmClient {
             String conversationKnowledgeContext,
             String context
     ) {
-        AgentAiApi agentAiApi = agentAiFactory.createAgentWithMemory(historyContext, conversationKnowledgeContext);
-        String rawResponse = agentAiApi.chat(context);
+        AgentAiApi agentAiApi = agentAiFactory.createAgentWithMemory(historyContext);
+        String rawResponse = agentAiApi.chat(concatKnowledgeContextAndQuestionContext(conversationKnowledgeContext, context));
         return agentResponseFormatter.normalize(rawResponse);
+    }
+
+    private String concatKnowledgeContextAndQuestionContext(String conversationKnowledgeContext, String userQuestion) {
+        String finalPrompt;
+
+        if (conversationKnowledgeContext != null) {
+            finalPrompt = conversationKnowledgeContext + "\n\nUser Question: " + userQuestion;
+        } else {
+            finalPrompt = userQuestion;
+        }
+        return finalPrompt;
     }
 }

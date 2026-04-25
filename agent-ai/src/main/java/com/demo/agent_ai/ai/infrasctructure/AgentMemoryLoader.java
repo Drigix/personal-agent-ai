@@ -16,7 +16,7 @@ import java.util.List;
 public class AgentMemoryLoader {
 
     public ChatMemory loadMemory(List<ChatMessage> messages) {
-        ChatMemory memory = MessageWindowChatMemory.withMaxMessages(50);
+        ChatMemory memory = MessageWindowChatMemory.withMaxMessages(10);
 
         if (messages != null && !messages.isEmpty()) {
             messages.forEach(m -> {
