@@ -1,36 +1,31 @@
-package com.demo.agent_ai.knowledge.infrastructure.pdf;
+package com.demo.agent_ai.knowledge.infrastructure.extractors;
 
+import com.demo.agent_ai.knowledge.domain.models.ProcessedDocument;
 import com.demo.agent_ai.knowledge.domain.models.UploadedFile;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-@Component
-public class PdfTextExtractor {
+public abstract class AbstractFileProcessor {
 
-    public String extract(UploadedFile file) {
-        try (PDDocument document = Loader.loadPDF(file.getContent())) {
-            PDFTextStripper stripper = new PDFTextStripper();
-            stripper.setSortByPosition(true);
-            return stripper.getText(document);
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot parse PDF", e);
-        }
+    public final ProcessedDocument process(UploadedFile file) {
+        String rawText = extract(file);
+        String normalizedText = normalize(rawText);
+        String hash = hash(normalizedText);
+        return ProcessedDocument.builder().normalizedText(normalizedText).hash(hash).build();
     }
 
-    public String normalize(String text) {
+    public abstract boolean supports(UploadedFile file);
+    protected abstract String extract(UploadedFile file);
+
+    private String normalize(String text) {
         if (text == null) {
             return "";
         }
 
         String normalized = text
-                // Unification ENTER signs 
+                // Unification ENTER signs
                 .replace("\r\n", "\n")
                 .replace("\r", "\n")
                 // Delete lines that consist only of digits (page numbers) or common footer/header patterns
@@ -60,7 +55,7 @@ public class PdfTextExtractor {
         return normalized.trim();
     }
 
-    public String hash(String text) {
+    private String hash(String text) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] encodedHash = digest.digest(text.getBytes(StandardCharsets.UTF_8));

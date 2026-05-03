@@ -4,14 +4,17 @@ import com.demo.agent_ai.ai.application.port.in.EmbeddingPort;
 import com.demo.agent_ai.knowledge.application.port.in.KnowledgeIngestPort;
 import com.demo.agent_ai.knowledge.domain.models.KnowledgeChunk;
 import com.demo.agent_ai.knowledge.domain.models.KnowledgeDocument;
+import com.demo.agent_ai.knowledge.domain.models.ProcessedDocument;
 import com.demo.agent_ai.knowledge.domain.models.UploadedFile;
 import com.demo.agent_ai.knowledge.domain.repository.KnowledgeChunkRepository;
 import com.demo.agent_ai.knowledge.domain.repository.KnowledgeDocumentRepository;
-import com.demo.agent_ai.knowledge.infrastructure.pdf.PdfTextExtractor;
+import com.demo.agent_ai.knowledge.infrastructure.extractors.AbstractFileProcessor;
+import com.demo.agent_ai.knowledge.infrastructure.extractors.PdfTextExtractor;
 import com.demo.agent_ai.knowledge.infrastructure.similarity.SimilaritySearch;
 import com.demo.agent_ai.knowledge.infrastructure.text.TextChunker;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,7 +23,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class KnowledgeIngestService implements KnowledgeIngestPort {
 
-    private final PdfTextExtractor pdfTextExtractor;
+    private final List<AbstractFileProcessor> extractors;
     private final KnowledgeDocumentRepository knowledgeDocumentRepository;
     private final KnowledgeChunkRepository knowledgeChunkRepository;
     private final EmbeddingPort embeddingPort;
@@ -28,25 +31,28 @@ public class KnowledgeIngestService implements KnowledgeIngestPort {
     private final SimilaritySearch similaritySearch;
 
     @Override
+    @Transactional
     public String ingestFiles(String conversationId, List<UploadedFile> files, String chatMessage) {
         List<KnowledgeChunk> savedKnowledgeChunks = new LinkedList<>();
         for(UploadedFile file: files) {
-            String rawText = pdfTextExtractor.extract(file);
-            String normalized = pdfTextExtractor.normalize(rawText);
-            String hash = pdfTextExtractor.hash(normalized);
-            if (knowledgeDocumentRepository.isContentHashExistInConversation(conversationId, hash)) {
+            AbstractFileProcessor extractor = extractors.stream()
+                    .filter(e -> e.supports(file))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Unsupported file type: " + file.getFilename()));
+            ProcessedDocument processedDocument = extractor.process(file);
+            if (knowledgeDocumentRepository.isContentHashExistInConversation(conversationId, processedDocument.getHash())) {
                 continue;
             }
             KnowledgeDocument document = knowledgeDocumentRepository.save(
                     KnowledgeDocument.builder()
                             .conversationId(conversationId)
                             .filename(file.getFilename())
-                            .contentHash(hash)
+                            .contentHash(processedDocument.getHash())
                             .date(new Date())
                             .build()
             );
 
-            List<String> chunks = textChunker.chunk(normalized);
+            List<String> chunks = textChunker.chunk(processedDocument.getNormalizedText());
 
             for (String chunk : chunks) {
                 float[] embedding = embeddingPort.embed(chunk);
