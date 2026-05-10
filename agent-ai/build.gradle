@@ -38,6 +38,8 @@ dependencies {
 	implementation 'dev.langchain4j:langchain4j-embeddings-all-minilm-l6-v2:1.8.0-beta15'
 
 	implementation 'org.apache.pdfbox:pdfbox:3.0.6'
+	implementation("org.apache.poi:poi-scratchpad:5.5.1")
+	implementation("org.apache.poi:poi-ooxml:5.5.1")
 
 	compileOnly 'org.projectlombok:lombok'
 	compileOnly 'org.mapstruct:mapstruct-processor:1.6.3'
