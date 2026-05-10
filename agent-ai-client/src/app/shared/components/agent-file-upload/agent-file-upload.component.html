@@ -1,4 +1,10 @@
-<p-fileupload #fileUploadComponent name="myfile[]" url="https://www.primefaces.org/cdn/api/upload.php" [multiple]="true" maxFileSize="1000000" (onUpload)="onTemplatedUpload()" (onSelect)="onSelectedFiles($event)">
+<p-fileupload #fileUploadComponent
+              name="myfile[]"
+              url="https://www.primefaces.org/cdn/api/upload.php"
+              [multiple]="true" maxFileSize="1000000"
+              (onUpload)="onTemplatedUpload()"
+              (onSelect)="onSelectedFiles($event)"
+>
   <ng-template #header let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
     <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
       <div class="flex gap-2">
@@ -25,6 +31,10 @@
                 }
                 @if (file?.type.includes('pdf')) {
                   <i class="pi pi-file-pdf icon-l-size"></i>
+                } @else if (file?.type.includes('sheet') || file?.type.includes('csv')) {
+                  <i class="pi pi-file-excel icon-l-size"></i>
+                } @else if (file?.type.includes('document')) {
+                  <i class="pi pi-file-word icon-l-size"></i>
                 }
                 <span class="font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden">{{ file.name }}</span>
                 <div>{{ formatSize(file.size) }}</div>

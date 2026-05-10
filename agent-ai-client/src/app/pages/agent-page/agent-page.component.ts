@@ -11,7 +11,7 @@ import {
   COMMON_IMPORTS, CUSTOM_COMPONENTS, CUSTOM_DIRECTIVES,
   FORMS_IMPORTS,
   PRIMENG_BUTTONS_COMPONENTS,
-  PRIMENG_LABEL_COMPONENTS
+  PRIMENG_LABEL_COMPONENTS, PRIMENG_OVERLAY_COMPONENTS
 } from '../../shared/primeng-module-import';
 import {ChatRequestBody} from '../../models/chat-request-body.model';
 import {ChatService} from '../../services/chat.service';
@@ -32,7 +32,7 @@ import {MarkdownComponent} from 'ngx-markdown';
   templateUrl: 'agent-page.component.html',
   styleUrls: ['agent-page.component.scss'],
   standalone: true,
-  imports: [...COMMON_IMPORTS, ...FORMS_IMPORTS, ...PRIMENG_LABEL_COMPONENTS, ...PRIMENG_BUTTONS_COMPONENTS, ...CUSTOM_DIRECTIVES, ...CUSTOM_COMPONENTS, MarkdownComponent],
+  imports: [...COMMON_IMPORTS, ...FORMS_IMPORTS, ...PRIMENG_LABEL_COMPONENTS, ...PRIMENG_BUTTONS_COMPONENTS, ...CUSTOM_DIRECTIVES, ...CUSTOM_COMPONENTS, MarkdownComponent, PRIMENG_OVERLAY_COMPONENTS],
   providers: [...CHAT_PROVIDER]
 })
 export class AgentPageComponent implements OnInit {

@@ -130,18 +130,41 @@
     margin: 5px;
   }
 
-  ::ng-deep .p-button {
+  #deleteConversationBtn ::ng-deep .p-button {
     margin: 3px 4px;
     background: var(--p-primary-danger-color);
     color: var(--p-primary-icon-color);
     height: 28px;
     width: 28px;
   }
+
+}
+
+.conversation-container-hidden {
+  cursor: pointer;
+  align-content: center;
+  text-align: center;
+  justify-content: center;
+  margin: var(--container-margin);
+
+  #displayHiddenConversationBtn ::ng-deep .p-button {
+    display: flex;
+    justify-content: center;
+    height: 34px;
+    width: 37px !important;
+  }
 }
 
 .selected-conversation {
   background: var(--p-secondary-color);
   border-color: var(--p-secondary-color);
+}
+
+.selected-conversation-hidden {
+  #displayHiddenConversationBtn ::ng-deep .p-button {
+    background: var(--p-secondary-color);
+    border-color: var(--p-secondary-color);
+  }
 }
 
 .content-container {

@@ -9,11 +9,21 @@
     <div class="conversations-scroll">
       @for(conversation of conversations(); track conversation.id) {
         <div
-          class="conversation-container"
-          [ngClass]="{'selected-conversation': selectedConversation()?.id === conversation.id}"
+          [ngClass]="{
+          'selected-conversation': selectedConversation()?.id === conversation.id && !isMenuHide(),
+          'selected-conversation-hidden': selectedConversation()?.id === conversation.id && isMenuHide(),
+          'conversation-container': !isMenuHide(),
+          'conversation-container-hidden': isMenuHide()
+          }"
           (click)="onConversationSelected(conversation)">
-          <span class="text-overflow-ellipsis">{{conversation.title}}</span>
-          <p-button icon="pi pi-trash" (onClick)="onDeleteConversationClicked(conversation?.id!); $event.stopPropagation()"></p-button>
+          @if (isMenuHide()) {
+            <div class="flex justify-content-center">
+              <p-button id="displayHiddenConversationBtn" icon="pi pi-pen-to-square" [pTooltip]="conversation.title"></p-button>
+            </div>
+          } @else {
+            <span class="text-overflow-ellipsis">{{conversation.title}}</span>
+            <p-button id="deleteConversationBtn" icon="pi pi-trash" (onClick)="onDeleteConversationClicked(conversation?.id!); $event.stopPropagation()"></p-button>
+          }
         </div>
       }
     </div>
