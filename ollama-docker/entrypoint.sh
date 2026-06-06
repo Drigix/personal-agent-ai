@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-echo "Starting ollama server..."
+echo "Starting ollama server...."
 ollama serve &
 SERVER_PID=$!
 
