@@ -48,7 +48,6 @@ public abstract class AbstractFileProcessor {
         // (we assume that if there is no ||PARAGRAPH||, then it was a single \n)
         normalized = normalized.replace("\n", " ");
 
-        // Krok 3: Przywróć akapity (zamień token na \n\n)
         // Step 3: Restore paragraphs (replace token with \n\n)
         normalized = normalized.replace("||PARAGRAPH||", "\n\n");
 
