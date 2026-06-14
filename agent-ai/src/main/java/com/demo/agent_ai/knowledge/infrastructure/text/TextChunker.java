@@ -40,7 +40,7 @@ public class TextChunker {
                 current.setLength(0);
 
                 if (justSaved.length() > OVERLAP) {
-                    current.append(justSaved.substring(justSaved.length() - OVERLAP));
+                    current.append(sentenceOverlap(justSaved));
                 } else {
                     current.append(justSaved);
                 }
@@ -68,5 +68,24 @@ public class TextChunker {
             start += (MAX_CHARS - OVERLAP);
         }
         return subChunks;
+    }
+
+    private String sentenceOverlap(String text) {
+        String[] sentences =
+                text.split("(?<=[.!?])\\s+");
+
+        StringBuilder overlap = new StringBuilder();
+
+        for (int i = sentences.length - 1; i >= 0; i--) {
+
+            if (overlap.length() + sentences[i].length() > OVERLAP
+                    && !overlap.isEmpty()) {
+                break;
+            }
+
+            overlap.insert(0, sentences[i] + " ");
+        }
+
+        return overlap.toString().trim();
     }
 }

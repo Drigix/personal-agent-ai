@@ -2,7 +2,7 @@ spring:
   application:
     name: agent-ai
   mongodb:
-    uri: mongodb://user:agent123@localhost:27017/chat_memory_db?authSource=admin
+    uri: mongodb://root:password@localhost:27017/chat_memory_db?authSource=admin
     database: chat_memory_db
 
 logging:

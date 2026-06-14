@@ -85,7 +85,7 @@
           pInputText
           [(ngModel)]="text"
           (keyup)="onKeyClick($event)" />
-        <p-button icon="pi pi-chevron-right" (onClick)="onSentClicked()"></p-button>
+        <p-button class="ml-3" icon="pi pi-chevron-right" (onClick)="onSentClicked()"></p-button>
       </div>
       <div class="file-upload-container">
         <agent-file-upload #agentFileUploadComponent></agent-file-upload>
