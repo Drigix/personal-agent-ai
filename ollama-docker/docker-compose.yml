@@ -16,7 +16,7 @@ services:
               capabilities: [gpu]
     environment:
       - OLLAMA_HOST=0.0.0.0
-      - MODEL=llama3.2
+      - MODEL=deepseek-v4-pro:cloud
       - EMBEDDING_MODEL=nomic-embed-text
     entrypoint: ["/bin/sh", "/entrypoint.sh"]
 
