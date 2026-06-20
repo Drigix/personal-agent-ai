@@ -1,0 +1,11 @@
+services:
+  database:
+    image: postgres:latest
+    ports:
+      - "5432:5432" # Expose PostgreSQL on the default port
+    environment:
+      POSTGRES_USER: user_postgres # Set the PostgreSQL username
+      POSTGRES_PASSWORD: password # Set the PostgreSQL password
+      POSTGRES_DB: personal_agent_db # Set the PostgreSQL database name
+    volumes:
+      - ./db-data/:/var/lib/postgresql/data/ # Persist PostgreSQL data
