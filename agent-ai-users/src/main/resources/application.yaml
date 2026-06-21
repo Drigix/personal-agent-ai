@@ -1,12 +1,14 @@
 spring:
   application:
     name: agent-ai-users
+  config:
+    import: optional:file:.env[.properties]
   sql:
     init:
       platform: postgres
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         dialect: PostgreSQLDialect
