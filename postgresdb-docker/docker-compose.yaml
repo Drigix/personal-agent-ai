@@ -1,6 +1,7 @@
 services:
   database:
     image: postgres:latest
+    container_name: personal_agent_db_container
     ports:
       - "5432:5432" # Expose PostgreSQL on the default port
     environment:
@@ -8,4 +9,4 @@ services:
       POSTGRES_PASSWORD: password # Set the PostgreSQL password
       POSTGRES_DB: personal_agent_db # Set the PostgreSQL database name
     volumes:
-      - ./db-data/:/var/lib/postgresql/data/ # Persist PostgreSQL data
+      - ./db-data/:/var/lib/postgresql/ # Persist PostgreSQL data
