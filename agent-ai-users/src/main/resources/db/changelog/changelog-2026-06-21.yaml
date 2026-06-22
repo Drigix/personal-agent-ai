@@ -1,0 +1,127 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Drigix
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: user_data
+      changes:
+        - createTable:
+            tableName: user_data
+            columns:
+              - column:
+                  name: user_data_id
+                  type: bigserial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uc_user_data_username
+              - column:
+                  name: email
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uc_user_data_email
+              - column:
+                  name: password
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 2
+      author: Drigix
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: role
+      changes:
+        - createTable:
+            tableName: role
+            columns:
+              - column:
+                  name: role_id
+                  type: bigserial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uc_role_name
+        - insert:
+            tableName: role
+            columns:
+              - column:
+                  name: name
+                  value: USER
+        - insert:
+            tableName: role
+            columns:
+              - column:
+                  name: name
+                  value: ADMIN
+
+  - changeSet:
+      id: 3
+      author: Drigix
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: user_data_role
+      changes:
+        - createTable:
+            tableName: user_data_role
+            columns:
+              - column:
+                  name: user_data_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_data_role_user
+                    references: user_data(user_data_id)
+                    deleteCascade: true
+              - column:
+                  name: role_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_data_role_role
+                    references: role(role_id)
+                    deleteCascade: true
+        - addPrimaryKey:
+            tableName: user_data_role
+            columnNames: user_data_id, role_id
+            constraintName: pk_user_data_role
