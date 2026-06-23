@@ -13,5 +13,14 @@
   "error": {
     "defaultHeader": "Błąd",
     "requestError": "Wystąpił błąd podczas przetwarzania zapytania. Spróbuj ponownie."
+  },
+  "login": {
+    "email": "Email",
+    "username": "Nazwa użytkownika",
+    "password": "Hasło",
+    "repeatPassword": "Powtórz hasło",
+    "login": "Zaloguj się",
+    "registerQuestion": "Nie masz konta? Zarejestruj się",
+    "register": "Zarejestruj się"
   }
 }

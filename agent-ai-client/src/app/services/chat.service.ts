@@ -4,11 +4,12 @@ import {ChatRequestBody} from '../models/chat-request-body.model';
 import {map, Observable} from 'rxjs';
 import {ConversationModel} from '../models/conversation.model';
 import {ChatMessageModel} from '../models/chat-message.model';
+import { CHAT_SERVICE_URL } from '../config/server-connection.const';
 
 @Injectable()
 export class ChatService {
 
-  private RESOURCE_URL = 'http://localhost:8080/api/' + 'chatSerivce/';
+  private RESOURCE_URL = CHAT_SERVICE_URL + '/chatService/';
   private httpClient = inject(HttpClient);
 
   generateChatRequest(body: ChatRequestBody, files: any[] | null): Observable<ChatMessageModel> {
