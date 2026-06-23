@@ -1,4 +1,4 @@
-<div class="grid page-layout">
+<div class="flex page-layout">
   <div class="flex flex-column h-full conversations-layout" [ngClass]="{'conversations-layout-menu-hidden': isMenuHide()}">
     <div class="menu-icon" [ngClass]="{'justify-content-end': !isMenuHide(), 'menu-icon-hidden justify-content-center': isMenuHide()}">
       <p-button icon="pi pi-bars" (onClick)="changeMenu()"></p-button>
@@ -21,8 +21,10 @@
               <p-button id="displayHiddenConversationBtn" icon="pi pi-pen-to-square" [pTooltip]="conversation.title"></p-button>
             </div>
           } @else {
-            <span class="text-overflow-ellipsis">{{conversation.title}}</span>
-            <p-button id="deleteConversationBtn" icon="pi pi-trash" (onClick)="onDeleteConversationClicked(conversation?.id!); $event.stopPropagation()"></p-button>
+            <div class="grid">
+              <span class="col-7 text-overflow-ellipsis">{{conversation.title}}</span>
+              <p-button class="col-4 p-0 m-0" id="deleteConversationBtn" icon="pi pi-trash" (onClick)="onDeleteConversationClicked(conversation?.id!); $event.stopPropagation()"></p-button>
+            </div>
           }
         </div>
       }
@@ -36,11 +38,13 @@
       } @else {
       <div class="history-conversation">
         @for(message of chatHistory(); track message.date) {
-          <div class="flex flex-row"
+          <div class="flex flex-row align-items-end"
                [ngClass]="!!message && message.isUserMessage() ? 'user-message-container' : 'agent-message-container'"
           >
             @if (message.isAgentMessage()) {
-              <img src="assets/images/agent-icon.png">
+              <div class="agent-icon">
+                <img src="assets/images/agent-icon.png">
+              </div>
             }
             <div
               class="content-container"
@@ -56,6 +60,11 @@
               }
               <markdown [data]="message.content || ''"></markdown>
             </div>
+            @if (message.isUserMessage()) {
+              <div class="user-icon">
+                <img src="assets/images/user-pen-alt.svg">
+              </div>
+            }
           </div>
         }
       </div>
