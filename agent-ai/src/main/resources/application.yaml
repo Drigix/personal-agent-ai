@@ -11,7 +11,7 @@ logging:
     org.mongodb.driver: DEBUG
 
 server:
-  port: 8080
+  port: 8081
 
 client:
   url: http://localhost:4200
