@@ -67,6 +67,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
                         .requestMatchers("/api/userAuthService/register").permitAll()
                         .requestMatchers("/api/userAuthService/login").permitAll()
+                        .requestMatchers("/api/userAuthService/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/auth/**").permitAll()
