@@ -7,12 +7,15 @@ import {
 import { provideRouter } from '@angular/router';
 import Aura from '@primeuix/themes/aura';
 import { routes } from './app.routes';
-import {provideTranslateHttpLoader} from '@ngx-translate/http-loader';
+import {provideTranslateHttpLoader, TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {provideTranslateService} from '@ngx-translate/core';
-import {provideHttpClient} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpBackend, HttpClient, provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {providePrimeNG} from 'primeng/config';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 import {provideMarkdown} from 'ngx-markdown';
+import { AuthInterceptor } from './config/auth.interceptor';
+import { ErrorHandlerInterceptor } from './config/error-handler.interceptor';
+import { MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,7 +28,9 @@ export const appConfig: ApplicationConfig = {
       }
     }),
     provideAnimationsAsync(),
-    provideHttpClient(),
+    provideHttpClient(withInterceptorsFromDi()),
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorHandlerInterceptor, multi: true },
     provideTranslateService({
       lang: 'pl',
       fallbackLang: 'pl',
@@ -35,6 +40,7 @@ export const appConfig: ApplicationConfig = {
       })
     }),
     { provide: LOCALE_ID, useValue: 'pl' },
-    provideMarkdown()
+    provideMarkdown(),
+    MessageService
   ]
 };

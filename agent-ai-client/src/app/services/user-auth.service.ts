@@ -2,10 +2,11 @@ import { inject, Injectable } from "@angular/core";
 import { AGENT_USER_SERVICE_URL } from "../config/server-connection.const";
 import { HttpClient } from "@angular/common/http";
 import { UserDataModel } from "../models/user-data.model";
-import { map, Observable } from "rxjs";
+import { BehaviorSubject, map, Observable } from "rxjs";
 import { UserLoginModel } from "../models/user-login.model";
+import { UserRoleEnum } from "../models/enums/user-role.enum";
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class UserAuthService {
 
   private RESOURCE_URL = AGENT_USER_SERVICE_URL + '/userAuthService/';
@@ -13,12 +14,22 @@ export class UserAuthService {
 
   private _userData: UserDataModel | null = null;
 
+  userDataChanges: BehaviorSubject<string> = new BehaviorSubject<string>('');
+
   get userData(): UserDataModel | null {
     return this._userData;
   }
 
   set userData(value: UserDataModel | null) {
     this._userData = value;
+  }
+
+  getUserRoles(): Set<string> {
+    return this._userData ? new Set(Array.from(this._userData.roles).map(role => role.name)) : new Set();
+  }
+
+  isUserAdmin(): boolean {
+    return this.getUserRoles().has(UserRoleEnum.ADMIN);
   }
 
   register(userLogin: UserLoginModel): Observable<UserDataModel> {
@@ -40,5 +51,13 @@ export class UserAuthService {
         return userData;
       })
     );
+  }
+
+  activeUserDatChange(key: string): void {
+    this.userDataChanges.next(key);
+  }
+
+  logout(): void {
+    this._userData = null;
   }
 }

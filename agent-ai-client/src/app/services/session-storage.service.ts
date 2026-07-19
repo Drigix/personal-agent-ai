@@ -15,7 +15,7 @@ export class SessionStorageService {
     return value ? new StorageModel(key, value) : undefined;
   }
 
-  remove(value: StorageModel): void {
-    this.storage.remove(value.key);
+  remove(key: string): void {
+    this.storage.remove(key);
   }
 }
