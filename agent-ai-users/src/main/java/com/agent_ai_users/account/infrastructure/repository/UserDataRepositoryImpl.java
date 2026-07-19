@@ -21,6 +21,11 @@ public class UserDataRepositoryImpl implements UserDataRepository {
     }
 
     @Override
+    public Optional<UserData> findByEmail(@NonNull String email) {
+        return springDataUserDataRepository.findUserDataByEmail(email);
+    }
+
+    @Override
     public UserData save(@NonNull UserData userData) {
         return springDataUserDataRepository.save(userData);
     }

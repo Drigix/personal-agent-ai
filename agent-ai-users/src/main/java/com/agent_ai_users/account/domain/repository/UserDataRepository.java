@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface UserDataRepository {
     Optional<UserData> findByUsername(@NonNull String username);
+    Optional<UserData> findByEmail(@NonNull String email);
     UserData save(@NonNull UserData userData);
 }

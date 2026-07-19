@@ -50,7 +50,7 @@ public class UserData implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     @Builder.Default
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles = Set.of(Role.builder().roleId(1L).name("USER").build());
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
