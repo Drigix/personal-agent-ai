@@ -2,5 +2,8 @@
 <p-confirmdialog key="appConfirmDialog"/>
 
 <div class="main-page">
+  @if (userData()) {
+    <agent-profile-menu></agent-profile-menu>
+  }
   <router-outlet></router-outlet>
 </div>
