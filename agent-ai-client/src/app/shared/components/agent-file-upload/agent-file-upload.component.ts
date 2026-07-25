@@ -2,8 +2,8 @@ import {Component, ElementRef, inject, ViewChild} from '@angular/core';
 import {PRIMENG_BUTTONS_COMPONENTS, PRIMENG_FILE_UPLOAD_COMPONENTS} from '../../primeng-module-import';
 import {PrimeNG} from 'primeng/config';
 import {MessageService} from 'primeng/api';
-import {MESSAGES_PROVIDER} from '../../../services/service-provider-import';
 import {FileUpload} from 'primeng/fileupload';
+import { COMMON_PROVIDER } from '../../../services/service-provider-import';
 
 @Component({
   selector: 'agent-file-upload',
@@ -11,7 +11,7 @@ import {FileUpload} from 'primeng/fileupload';
   styleUrls: ['./agent-file-upload.component.scss'],
   standalone: true,
   imports: [PRIMENG_FILE_UPLOAD_COMPONENTS, PRIMENG_BUTTONS_COMPONENTS],
-  providers: [MESSAGES_PROVIDER]
+  providers: [...COMMON_PROVIDER]
 })
 export class AgentFileUploadComponent {
 

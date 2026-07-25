@@ -35,6 +35,8 @@ import {AgentFileUploadComponent} from './components/agent-file-upload/agent-fil
 import {Badge} from 'primeng/badge';
 import {ProgressBar} from 'primeng/progressbar';
 import { Password } from 'primeng/password';
+import { Menu } from 'primeng/menu';
+import { ProfileMenuComponent } from './layouts/menu/profile-menu.component';
 
 export const COMMON_IMPORTS =
   [CommonModule, RouterModule, TranslateDirective, TranslatePipe, Skeleton];
@@ -62,10 +64,12 @@ export const PRIMENG_MISC_COMPONENTS =
 
 export const PRIMENG_FILE_UPLOAD_COMPONENTS = [FileUpload, Badge, ProgressBar];
 
-export const CUSTOM_COMPONENTS = [AgentFileUploadComponent];
+export const CUSTOM_COMPONENTS = [AgentFileUploadComponent, ProfileMenuComponent];
 
 export const CUSTOM_DIRECTIVES = [
   AgentSpinnerDirective, AgentSpinnerComponent
 ];
 
 export const PASSWORD_IMPORTS = [Password];
+
+export const MENU_IMPORTS = [Menu];
