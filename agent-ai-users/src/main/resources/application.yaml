@@ -12,9 +12,9 @@ spring:
     show-sql: true
     generate-ddl: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/personal_agent_db
-    username: user_postgres
-    password: password
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   messages:
     basename: lang/messages_en
 
@@ -26,4 +26,5 @@ client:
 
 jwt:
   secret: ${JWT_SECRET}
-  expiration-ms: 36000000
+  expiration-ms: 900000
+  refresh-expiration-ms: 604800000
