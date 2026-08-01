@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: creates_refresh_token_table
+      author: Drigix
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: refresh_token
+      changes:
+        - createTable:
+            tableName: refresh_token
+            columns:
+              - column:
+                  name: refresh_token_id
+                  type: bigserial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: token_hash
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uc_refresh_token_hash
+              - column:
+                  name: expiry_date
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: revoked
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: replaced_by_token_hash
+                  type: varchar
+              - column:
+                  name: user_data_id
+                  type: bigserial
+                  constraints:
+                    foreignKeyName: fk_user_data
+                    referencedTableName: user_data
+                    referencedColumnNames: user_data_id
