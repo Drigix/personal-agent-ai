@@ -2,6 +2,7 @@ package com.agent_ai_users.config;
 
 import com.agent_ai_users.shared.utils.StringUtils;
 import com.agent_ai_users.web.errors.ErrorResponseDTO;
+import com.agent_ai_users.web.errors.JwtTokenExpiredException;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.context.MessageSource;
@@ -54,6 +55,15 @@ public class GlobalExceptionHandler {
         String message = messageSource.getMessage(ex.getMessage(), null, locale);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ErrorResponseDTO.builder().status(500).message( "An unexpected error occurred").build());
+                .body(ErrorResponseDTO.builder().status(500).message("An unexpected error occurred").build());
+    }
+
+    @ExceptionHandler(JwtTokenExpiredException.class)
+    public ResponseEntity<ErrorResponseDTO> handleJwtExpired(JwtTokenExpiredException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage(ex.getMessage(), null, locale);
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponseDTO.builder().status(401).message(StringUtils.isEmpty(message) ? "Access token expired" : message).build());
     }
 }
