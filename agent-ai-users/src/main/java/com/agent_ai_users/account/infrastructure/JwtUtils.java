@@ -1,6 +1,7 @@
 package com.agent_ai_users.account.infrastructure;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Component
@@ -21,7 +23,7 @@ public class JwtUtils {
     private final long expirationMs;
 
     public JwtUtils(@Value("${jwt.secret}") String secret,
-                    @Value("${jwt.expiration-ms:36000000}") long expirationMs) {
+                    @Value("${jwt.expiration-ms:900000}") long expirationMs) {
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes());
         this.expirationMs = expirationMs;
     }
@@ -71,5 +73,13 @@ public class JwtUtils {
     public boolean validateToken(String token, String username) {
         final String extractedUsername = extractUsername(token);
         return extractedUsername.equals(username) && !isTokenExpired(token);
+    }
+
+    public Optional<Claims> tryExtractAllClaims(String token) {
+        try {
+            return Optional.of(extractAllClaims(token));
+        } catch (JwtException | IllegalArgumentException e) {
+            return Optional.empty();
+        }
     }
 }

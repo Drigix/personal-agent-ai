@@ -4,19 +4,27 @@ package com.agent_ai_users.web.controllers;
 import com.agent_ai_users.account.application.AuthenticationService;
 import com.agent_ai_users.account.application.UserService;
 import com.agent_ai_users.account.domain.entities.UserData;
+import com.agent_ai_users.auth.domain.models.TokenPair;
 import com.agent_ai_users.shared.utils.StringUtils;
+import com.agent_ai_users.web.mappers.TokenPairMapper;
 import com.agent_ai_users.web.mappers.UserDataMapper;
+import com.agent_ai_users.web.models.TokenPairDTO;
 import com.agent_ai_users.web.models.UserDataDTO;
 import com.agent_ai_users.web.models.UserLoginDTO;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.jspecify.annotations.NonNull;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/api/userAuthService")
@@ -28,6 +36,7 @@ public class UserAuthController {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final UserDataMapper userDataMapper;
+    private final TokenPairMapper tokenPairMapper;
 
     @PostMapping(value = "/register")
     public ResponseEntity<UserDataDTO> register(@RequestBody @NonNull UserLoginDTO userLoginDTO) throws BadRequestException {
@@ -55,14 +64,20 @@ public class UserAuthController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<String> login(@RequestBody @NonNull UserLoginDTO userLoginDTO) throws BadRequestException {
+    public ResponseEntity<TokenPairDTO> login(@RequestBody @NonNull UserLoginDTO userLoginDTO) throws BadRequestException {
         if (StringUtils.isEmpty(userLoginDTO.getUsername()) ||
                 StringUtils.isEmpty(userLoginDTO.getPassword()
         )) {
             throw new BadRequestException("error.emailAndPasswordHasToBeFilled");
         }
-        String token = authenticationService.authenticate(userLoginDTO.getUsername(), userLoginDTO.getPassword(), authenticationManager);
-        return ResponseEntity.ok(token);
+        TokenPair token = authenticationService.authenticate(userLoginDTO.getUsername(), userLoginDTO.getPassword(), authenticationManager);
+        return ResponseEntity.ok(tokenPairMapper.toDto(token));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenPairDTO> refresh(@RequestParam("refreshToken") @lombok.NonNull String refreshToken) {
+        TokenPair token = authenticationService.refresh(refreshToken);
+        return ResponseEntity.ok(tokenPairMapper.toDto(token));
     }
 
     @GetMapping(value = "/getUserData")

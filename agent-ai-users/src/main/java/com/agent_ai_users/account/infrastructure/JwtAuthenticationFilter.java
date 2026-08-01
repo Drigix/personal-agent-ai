@@ -1,6 +1,9 @@
 package com.agent_ai_users.account.infrastructure;
 
 import com.agent_ai_users.account.application.AuthenticationService;
+import com.agent_ai_users.web.errors.JwtTokenExpiredException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,18 +41,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String token = authHeader.substring(7);
-        final String username = jwtUtils.extractUsername(token);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = authenticationService.loadUserByUsername(username);
+        try {
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                final String username = jwtUtils.extractUsername(token);
+                UserDetails userDetails = authenticationService.loadUserByUsername(username);
 
-            if (jwtUtils.validateToken(token, username)) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                if (userDetails != null && jwtUtils.validateToken(token, username)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+        } catch (ExpiredJwtException e) {
+            throw new JwtTokenExpiredException("error.accessTokenExpired");
+        } catch (JwtException | IllegalArgumentException e) {
+            throw e;
         }
 
         filterChain.doFilter(request, response);
