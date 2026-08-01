@@ -38,10 +38,8 @@ export class LoginPageComponent implements OnInit {
     onLoginClick(): void {
         this.userAuthService.login(this.userLoginModel()).subscribe({
             next: (tokenPair: TokenPairModel) => {
-                console.log('Login successful. Token:', tokenPair.accessToken);
                 this.sessionStorageService.save(new StorageModel(SessionStorageKeys.AUTH_TOKEN, tokenPair.accessToken));
                 this.sessionStorageService.save(new StorageModel(SessionStorageKeys.REFRESH_TOKEN, tokenPair.refreshToken));
-                this.sessionStorageService
                 this.userAuthService.activeUserDatChange('LOGIN_DATA_CHANGED');
             },
             complete: () => {

@@ -10,6 +10,7 @@ import { ErrorResponseModel } from './models/errors/error-response.model';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { UserDataModel } from './models/user-data.model';
+import { StorageModel } from './models/storage.model';
 
 @Component({
   selector: 'app-root',
@@ -40,10 +41,22 @@ export class App implements OnInit {
 
   private refreshTokenAndUserData(isFirstLoad: boolean): void {
     const token = this.sessionStorageService.load(SessionStorageKeys.AUTH_TOKEN)?.value;
-    if (token) {
-      if (JwtUtils.isTokenExpired(token)) {
-        this.sessionStorageService.remove(SessionStorageKeys.AUTH_TOKEN);
-      } else {
+    const refreshToken = this.sessionStorageService.load(SessionStorageKeys.REFRESH_TOKEN)?.value;
+    if (!refreshToken) {
+      this.sessionStorageService.remove(SessionStorageKeys.AUTH_TOKEN);
+      this.userData.set(null);
+      this.router.navigate(['/login']);
+      return;
+    }
+    if (!token || JwtUtils.isTokenExpired(token)) {
+      this.userAuthService.refresh(refreshToken).subscribe({
+        next: (tokenPair) => {
+          this.sessionStorageService.save(new StorageModel(SessionStorageKeys.AUTH_TOKEN, tokenPair.accessToken));
+          this.sessionStorageService.save(new StorageModel(SessionStorageKeys.REFRESH_TOKEN, tokenPair.refreshToken));
+          this.refreshTokenAndUserData(isFirstLoad);
+        }
+      });
+    } else {
         const decodedToken = JwtUtils.decodeToken(token);
         this.userAuthService.getUserData(decodedToken.sub).subscribe({
           next: (userData) => {
@@ -60,10 +73,6 @@ export class App implements OnInit {
             );
           }
         });
-      }
-    } else {
-      this.userData.set(null);
-      this.router.navigate(['/login']);
     }
   }
 }
