@@ -13,6 +13,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ErrorResponseDTO {
+    private ErrorResponseTypeEnum type;
     private int status;
     private String message;
     @Builder.Default

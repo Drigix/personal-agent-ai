@@ -2,6 +2,7 @@ package com.agent_ai_users.config;
 
 import com.agent_ai_users.shared.utils.StringUtils;
 import com.agent_ai_users.web.errors.ErrorResponseDTO;
+import com.agent_ai_users.web.errors.ErrorResponseTypeEnum;
 import com.agent_ai_users.web.errors.JwtTokenExpiredException;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.security.InvalidParameterException;
 import java.util.Locale;
 
 @RestControllerAdvice
@@ -46,7 +48,7 @@ public class GlobalExceptionHandler {
         String message = messageSource.getMessage(ex.getMessage(), null, locale);
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(ErrorResponseDTO.builder().status(401).message(StringUtils.isEmpty(message) ? "Invalid username or password" : message).build());
+                .body(ErrorResponseDTO.builder().type(ErrorResponseTypeEnum.BAD_CREDENTIALS).status(401).message(StringUtils.isEmpty(message) ? "Invalid username or password" : message).build());
     }
 
     @ExceptionHandler(Exception.class)
@@ -64,6 +66,15 @@ public class GlobalExceptionHandler {
         String message = messageSource.getMessage(ex.getMessage(), null, locale);
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(ErrorResponseDTO.builder().status(401).message(StringUtils.isEmpty(message) ? "Access token expired" : message).build());
+                .body(ErrorResponseDTO.builder().type(ErrorResponseTypeEnum.JWT_EXPIRED).status(401).message(StringUtils.isEmpty(message) ? "Access token expired" : message).build());
+    }
+
+    @ExceptionHandler(InvalidParameterException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidParameter(InvalidParameterException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage(ex.getMessage(), null, locale);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorResponseDTO.builder().status(409).message(StringUtils.isEmpty(message) ? "Invalid parameter pass" : message).build());
     }
 }
