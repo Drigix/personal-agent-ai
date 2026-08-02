@@ -1,8 +1,8 @@
 package com.agent_ai_users.config;
 
 
-import com.agent_ai_users.account.application.AuthenticationService;
-import com.agent_ai_users.account.infrastructure.JwtAuthenticationFilter;
+import com.agent_ai_users.auth.application.AuthenticationService;
+import com.agent_ai_users.auth.infrastructure.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

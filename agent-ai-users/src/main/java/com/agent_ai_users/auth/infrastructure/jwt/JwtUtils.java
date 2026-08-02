@@ -1,4 +1,4 @@
-package com.agent_ai_users.account.infrastructure;
+package com.agent_ai_users.auth.infrastructure.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

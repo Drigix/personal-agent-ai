@@ -1,18 +1,32 @@
 package com.agent_ai_users.account.application;
 
+import com.agent_ai_users.account.application.port.in.UserIngestPort;
 import com.agent_ai_users.account.domain.entities.UserData;
 import com.agent_ai_users.account.domain.repository.UserDataRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserIngestPort {
+
     private final UserDataRepository userDataRepository;
 
-    public @Nullable UserData getUserDataByUsername(@NonNull String username) {
-        return userDataRepository.findByUsername(username).orElse(null);
+    @Override
+    public Optional<UserData> findByEmail(@NonNull String email) {
+        return userDataRepository.findByEmail(email);
+    }
+
+    @Override
+    public Optional<UserData> findByUsername(@NonNull String username) {
+        return userDataRepository.findByUsername(username);
+    }
+
+    @Override
+    public UserData save(@NonNull UserData user) {
+        return userDataRepository.save(user);
     }
 }

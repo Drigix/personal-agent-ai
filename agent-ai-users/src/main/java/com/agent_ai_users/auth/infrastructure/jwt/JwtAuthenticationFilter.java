@@ -1,6 +1,6 @@
-package com.agent_ai_users.account.infrastructure;
+package com.agent_ai_users.auth.infrastructure.jwt;
 
-import com.agent_ai_users.account.application.AuthenticationService;
+import com.agent_ai_users.auth.application.AuthenticationService;
 import com.agent_ai_users.web.errors.JwtTokenExpiredException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -8,7 +8,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
