@@ -1,9 +1,9 @@
 package com.agent_ai_users.web.controllers;
 
 
-import com.agent_ai_users.account.application.AuthenticationService;
 import com.agent_ai_users.account.application.UserService;
 import com.agent_ai_users.account.domain.entities.UserData;
+import com.agent_ai_users.auth.application.AuthenticationService;
 import com.agent_ai_users.auth.domain.models.TokenPair;
 import com.agent_ai_users.shared.utils.StringUtils;
 import com.agent_ai_users.web.mappers.TokenPairMapper;
@@ -11,20 +11,14 @@ import com.agent_ai_users.web.mappers.UserDataMapper;
 import com.agent_ai_users.web.models.TokenPairDTO;
 import com.agent_ai_users.web.models.UserDataDTO;
 import com.agent_ai_users.web.models.UserLoginDTO;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.jspecify.annotations.NonNull;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Duration;
 
 @RestController
 @RequestMapping("/api/userAuthService")
@@ -80,9 +74,16 @@ public class UserAuthController {
         return ResponseEntity.ok(tokenPairMapper.toDto(token));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestParam("refreshToken") @lombok.NonNull String refreshToken) {
+        authenticationService.logout(refreshToken);
+        return ResponseEntity.ok().build();
+    }
+
+
     @GetMapping(value = "/getUserData")
     public ResponseEntity<UserDataDTO> getUserData(@RequestParam String username) {
-        UserData userData = userService.getUserDataByUsername(username);
+        UserData userData = userService.findByUsername(username).orElse(null);
         if  (userData == null) {
             throw new UsernameNotFoundException(username);
         }
