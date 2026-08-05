@@ -11,8 +11,13 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
     private messageService = inject(MessageService);
     private translateService = inject(TranslateService);
 
+    private urlsNotToCatch = [
+        '/assets/i18n/',
+        '/userAuthService/refresh'
+    ];
+
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        if (req.url.includes('/assets/i18n/')) {
+        if (this.urlsNotToCatch.some(url => req.url.includes(url))) {
             return next.handle(req);
         }
         return next.handle(req).pipe(
@@ -30,7 +35,8 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
     }
 
     private extractBackendError(error: HttpErrorResponse): ErrorResponseModel | null {
-        if (error.error instanceof ErrorResponseModel) {
+        const errorResponse = new ErrorResponseModel(error.error?.type, error.error?.status, error.error?.message, error.error?.timestamp);
+        if (errorResponse instanceof ErrorResponseModel && errorResponse.isErrorCorrect()) {
             return error.error;
         }
         if (error.error && typeof error.error === 'string') {
