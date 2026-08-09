@@ -1,4 +1,4 @@
-package com.demo.agent_ai.security;
+package com.demo.agent_ai.auth.insfrastructure.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
