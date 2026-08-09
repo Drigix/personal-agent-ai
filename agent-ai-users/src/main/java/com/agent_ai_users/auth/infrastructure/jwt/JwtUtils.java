@@ -1,10 +1,12 @@
 package com.agent_ai_users.auth.infrastructure.jwt;
 
+import com.agent_ai_users.account.domain.entities.UserData;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -53,9 +55,12 @@ public class JwtUtils {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(String username) {
+    public String generateToken(UserData userData) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username);
+        claims.put("roles", userData.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList());
+        return createToken(claims, userData.getUsername());
     }
 
     private String createToken(Map<String, Object> claims, String subject) {

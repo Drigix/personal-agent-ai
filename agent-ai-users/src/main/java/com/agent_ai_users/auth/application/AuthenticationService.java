@@ -31,7 +31,7 @@ public class AuthenticationService implements AuthenticationIngestPort {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));
             UserData user = (UserData) auth.getPrincipal();
-            String accessToken = jwtUtils.generateToken(username);
+            String accessToken = jwtUtils.generateToken(user);
             String refreshToken = refreshTokenService.createRefreshToken(user);
 
             return new TokenPair(accessToken, refreshToken);
@@ -42,7 +42,7 @@ public class AuthenticationService implements AuthenticationIngestPort {
 
     public TokenPair refresh(@NonNull String refreshToken) {
         RefreshTokenService.RotatedToken rotated = refreshTokenService.rotate(refreshToken);
-        String newAccessToken = jwtUtils.generateToken(rotated.user().getUsername());
+        String newAccessToken = jwtUtils.generateToken(rotated.user());
         return new TokenPair(newAccessToken, rotated.rawToken());
     }
 
