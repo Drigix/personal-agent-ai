@@ -1,0 +1,80 @@
+package com.demo.agent_ai.config;
+
+import com.demo.agent_ai.utils.StringUtils;
+import com.demo.agent_ai.web.errors.ErrorResponseDTO;
+import com.demo.agent_ai.web.errors.ErrorResponseTypeEnum;
+import com.demo.agent_ai.web.errors.JwtTokenExpiredException;
+import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.security.InvalidParameterException;
+import java.util.Locale;
+
+@RestControllerAdvice
+@RequiredArgsConstructor
+public class GlobalExceptionHandler {
+
+    private final MessageSource messageSource;
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBadRequest(BadRequestException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage(ex.getMessage(), null, locale);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponseDTO.builder().status(400).message(message).build());
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUserNotFound(UsernameNotFoundException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage(ex.getMessage(), null, locale);
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponseDTO.builder().status(404).message(message).build());
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBadCredentials(BadCredentialsException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage(ex.getMessage(), null, locale);
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponseDTO.builder().type(ErrorResponseTypeEnum.BAD_CREDENTIALS).status(401).message(StringUtils.isEmpty(message) ? "Invalid username or password" : message).build());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDTO> handleGeneric(Exception ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage(ex.getMessage(), null, locale);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponseDTO.builder().status(500).message("An unexpected error occurred").build());
+    }
+
+    @ExceptionHandler(JwtTokenExpiredException.class)
+    public ResponseEntity<ErrorResponseDTO> handleJwtExpired(JwtTokenExpiredException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage(ex.getMessage(), null, locale);
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponseDTO.builder().type(ErrorResponseTypeEnum.JWT_EXPIRED).status(401).message(StringUtils.isEmpty(message) ? "Access token expired" : message).build());
+    }
+
+    @ExceptionHandler(InvalidParameterException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidParameter(InvalidParameterException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage(ex.getMessage(), null, locale);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorResponseDTO.builder().status(409).message(StringUtils.isEmpty(message) ? "Invalid parameter pass" : message).build());
+    }
+}
