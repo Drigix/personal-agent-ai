@@ -25,6 +25,7 @@ dependencies {
 	implementation 'org.jspecify:jspecify:1.0.0'
 	implementation 'org.liquibase:liquibase-core:5.0.3'
 	implementation 'org.mapstruct:mapstruct:1.6.3'
+	implementation 'org.postgresql:postgresql'
 
 	compileOnly 'org.projectlombok:lombok'
 	compileOnly 'org.mapstruct:mapstruct-processor:1.6.3'
