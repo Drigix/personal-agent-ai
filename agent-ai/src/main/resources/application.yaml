@@ -1,6 +1,8 @@
 spring:
   application:
     name: agent-ai
+  config:
+    import: optional:file:.env[.properties]
   mongodb:
     url: ${DB_URL}
     database: chat_memory_db
