@@ -54,6 +54,12 @@ export class App implements OnInit {
           this.sessionStorageService.save(new StorageModel(SessionStorageKeys.AUTH_TOKEN, tokenPair.accessToken));
           this.sessionStorageService.save(new StorageModel(SessionStorageKeys.REFRESH_TOKEN, tokenPair.refreshToken));
           this.refreshTokenAndUserData(isFirstLoad);
+        },
+        error: (error: ErrorResponseModel) => {
+          if (error.status === 409) {
+              this.sessionStorageService.remove(SessionStorageKeys.AUTH_TOKEN);
+              this.sessionStorageService.remove(SessionStorageKeys.REFRESH_TOKEN);
+          }
         }
       });
     } else {

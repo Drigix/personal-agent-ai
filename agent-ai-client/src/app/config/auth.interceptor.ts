@@ -7,6 +7,7 @@ import { ErrorResponseModel } from "../models/errors/error-response.model";
 import { UserAuthService } from "../services/user-auth.service";
 import { TokenPairModel } from "../models/auth/token-pair.model";
 import { StorageModel } from "../models/storage.model";
+import { ErrorResponseTypeEnum } from "../models/enums/error-response-type.enum";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -27,8 +28,8 @@ export class AuthInterceptor implements HttpInterceptor {
 
         return next.handle(authReq).pipe(
             catchError((error: ErrorResponseModel) => {
-                if (error.status === 401) {
-                return this.handle401(authReq, next);
+                if (error.status === 401 && error.type === ErrorResponseTypeEnum.JWT_EXPIRED) {
+                  return this.handle401Jwt(req, next);
                 }
                 return throwError(() => error);
             })
@@ -39,12 +40,12 @@ export class AuthInterceptor implements HttpInterceptor {
         return req.clone({ headers: req.headers.set('Authorization', `Bearer ${token}`) });
     }
 
-     private handle401(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+     private handle401Jwt(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
       this.refreshTokenSubject.next(null);
-
-      return this.userAuthService.refresh(this.sessionStorageService.load(SessionStorageKeys.REFRESH_TOKEN)?.value).pipe(
+      const refreshToken = this.sessionStorageService.load(SessionStorageKeys.REFRESH_TOKEN)?.value;
+      return this.userAuthService.refresh(refreshToken).pipe(
         switchMap((tokenPair: TokenPairModel) => {
           this.isRefreshing = false;
           this.sessionStorageService.save(new StorageModel(SessionStorageKeys.AUTH_TOKEN, tokenPair.accessToken));
@@ -54,7 +55,17 @@ export class AuthInterceptor implements HttpInterceptor {
         }),
         catchError((err) => {
           this.isRefreshing = false;
-          this.userAuthService.logout();
+          if (refreshToken) {
+            this.userAuthService.logout(refreshToken).subscribe({
+              complete: () => {
+                this.sessionStorageService.remove(SessionStorageKeys.AUTH_TOKEN);
+                this.sessionStorageService.remove(SessionStorageKeys.REFRESH_TOKEN);
+                this.userAuthService.activeUserDatChange('LOGOUT_DATA_CHANGED');
+              }
+            });
+          } else {
+            this.userAuthService.userData = null;
+          }
           return throwError(() => err);
         })
       );
