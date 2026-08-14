@@ -48,6 +48,13 @@ export class UserAuthService {
     return this.httpClient.post<TokenPairModel>(url, null, { params: { refreshToken }, responseType: 'json' });
   }
 
+  logout(refreshToken: string): Observable<void> {
+    const url = this.RESOURCE_URL + "logout";
+    return this.httpClient.post<void>(url, null, { params: { refreshToken }, responseType: 'json' }).pipe(map(res => {
+      this._userData = null;
+    }));
+  }
+
   getUserData(username: string): Observable<UserDataModel> {
     const params = { username: username };
     const url = this.RESOURCE_URL + "getUserData";
@@ -61,9 +68,5 @@ export class UserAuthService {
 
   activeUserDatChange(key: string): void {
     this.userDataChanges.next(key);
-  }
-
-  logout(): void {
-    this._userData = null;
   }
 }
