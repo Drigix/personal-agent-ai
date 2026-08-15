@@ -8,6 +8,7 @@ import java.util.Set;
 @Data
 @SuperBuilder
 public class UserDataDTO {
+    private Long userDataId;
     private String username;
     private boolean enabled;
     private Set<RoleDTO> roles;
