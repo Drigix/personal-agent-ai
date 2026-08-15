@@ -1,5 +1,6 @@
 package com.demo.agent_ai.chat.domain.models;
 
+import com.mongodb.lang.NonNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
@@ -22,6 +22,9 @@ public class Conversation {
 
     @Id
     private String id;
+
+    @NonNull
+    private Long userDataId;
 
     private String title;
 

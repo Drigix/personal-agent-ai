@@ -5,29 +5,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.util.Date;
 import java.util.Objects;
 
 @Data
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatRequestBody extends AuthenticatedDataRequestBody {
-    private String title;
-    private String chatMessage;
+public class ConversationRequestBody extends AuthenticatedDataRequestBody{
     private String conversationId;
-    private Date date;
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        ChatRequestBody that = (ChatRequestBody) o;
-        return Objects.equals(title, that.title) && Objects.equals(chatMessage, that.chatMessage) && Objects.equals(conversationId, that.conversationId) && Objects.equals(date, that.date);
+        ConversationRequestBody that = (ConversationRequestBody) o;
+        return Objects.equals(conversationId, that.conversationId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), title, chatMessage, conversationId, date);
+        return Objects.hash(super.hashCode(), conversationId);
     }
 }

@@ -11,5 +11,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class ConversationResponse {
     private String id;
+    private Long userDataId;
     private String title;
 }
