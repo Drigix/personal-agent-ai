@@ -8,11 +8,13 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 
 @Document(collection = "conversations")
+@CompoundIndex(name = "userDataId_date_idx", def = "{'userDataId': 1, 'date': -1}")
 @Getter
 @Setter
 @SuperBuilder
