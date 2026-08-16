@@ -6,6 +6,7 @@ import com.demo.agent_ai.web.mappers.ConversationMapper;
 import com.demo.agent_ai.web.mappers.UploadedFileMapper;
 import com.demo.agent_ai.web.models.ChatMessageResponse;
 import com.demo.agent_ai.web.models.ChatRequestBody;
+import com.demo.agent_ai.web.models.ConversationRequestBody;
 import com.demo.agent_ai.web.models.ConversationResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
@@ -17,7 +18,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/chatSerivce")
+@RequestMapping("/api/chatService")
 @SessionAttributes("memoryChatService")
 @AllArgsConstructor
 public class ChatController {
@@ -38,17 +39,17 @@ public class ChatController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/getConversations")
-    public ResponseEntity<List<ConversationResponse>> getConversations() {
-        List<ConversationResponse> results = conversationMapper.toModel(chatService.getConversations());
+    @PostMapping("/getConversations")
+    public ResponseEntity<List<ConversationResponse>> getConversations(@RequestBody ConversationRequestBody requestBody) {
+        List<ConversationResponse> results = conversationMapper.toModel(chatService.getConversations(requestBody.getUserDataId()));
         return ResponseEntity.ok(results);
     }
 
-    @GetMapping("/getChatHistoryByConversationId/{conversationId}")
+    @PostMapping("/getChatHistoryByConversationId")
     public ResponseEntity<List<ChatMessageResponse>> getChatHistoryByConversationId(
-             @PathVariable("conversationId") String conversationId
+            @RequestBody ConversationRequestBody requestBody
     ) {
-        List<ChatMessageResponse> results = chatMessageMapper.toModel(chatService.getChatHistoryByConversationId(conversationId));
+        List<ChatMessageResponse> results = chatMessageMapper.toModel(chatService.getChatHistoryByConversationId(requestBody.getConversationId()));
         return ResponseEntity.ok(results);
     }
 
