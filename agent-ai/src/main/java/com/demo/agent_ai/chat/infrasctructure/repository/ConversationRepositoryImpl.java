@@ -4,7 +4,9 @@ import com.demo.agent_ai.chat.domain.models.ChatMessage;
 import com.demo.agent_ai.chat.domain.models.Conversation;
 import com.demo.agent_ai.chat.domain.repository.ConversationRepository;
 import com.demo.agent_ai.chat.infrasctructure.adapters.SpringDataConversationRepository;
+import com.demo.agent_ai.utils.SortField;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
@@ -22,10 +24,17 @@ public class ConversationRepositoryImpl implements ConversationRepository {
     }
 
     @Override
-    public List<Conversation> findAll(String sortField, boolean ascending) {
-        Sort sort = ascending
-                ? Sort.by(Sort.Direction.ASC, sortField)
-                : Sort.by(Sort.Direction.DESC, sortField);
+    public List<Conversation> findAllByUserDataId(Long userDataId, SortField sortField) {
+        if (sortField == null) {
+            return springDataConversationRepository.findAllByUserDataIdOrderByDateDesc(userDataId);
+        }
+        Sort sort = Sort.by(sortField.getDirection(), sortField.getField());
+        return springDataConversationRepository.findAllByUserDataId(userDataId, sort);
+    }
+
+    @Override
+    public List<Conversation> findAll(@NonNull SortField sortField) {
+        Sort sort = Sort.by(sortField.getDirection(), sortField.getField());
         return springDataConversationRepository.findAll(sort);
     }
 

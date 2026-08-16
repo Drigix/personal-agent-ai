@@ -11,6 +11,7 @@ import com.demo.agent_ai.knowledge.application.port.in.KnowledgeIngestPort;
 import com.demo.agent_ai.knowledge.domain.models.UploadedFile;
 import com.demo.agent_ai.web.models.ChatRequestBody;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -38,8 +39,8 @@ public class ChatService {
         }
     }
 
-    public List<Conversation> getConversations() {
-        return conversationRepository.findAll("date", false);
+    public List<Conversation> getConversations(@NonNull Long userDataId) {
+        return conversationRepository.findAllByUserDataId(userDataId, null);
     }
 
     public List<ChatMessage> getChatHistoryByConversationId(String conversationId) {
@@ -53,7 +54,7 @@ public class ChatService {
     }
 
     private ChatMessage newConversationChat(ChatRequestBody requestBody, List<UploadedFile> files) {
-        Conversation newConversation = saveConversation(requestBody.getTitle());
+        Conversation newConversation = saveConversation(requestBody.getTitle(), requestBody.getUserDataId());
         String conversationId = newConversation.getId();
         saveChatMessage(
                 conversationId,
@@ -95,7 +96,7 @@ public class ChatService {
             String response) {
         String conversationId = requestBody.getConversationId();
         if (!StringUtils.hasText(conversationId)) {
-            Conversation newConversation = saveConversation(requestBody.getTitle());
+            Conversation newConversation = saveConversation(requestBody.getTitle(), requestBody.getUserDataId());
             conversationId = newConversation.getId();
         }
 
@@ -117,8 +118,9 @@ public class ChatService {
         return newAgentChatMessage;
     }
 
-    private Conversation saveConversation(String title) {
+    private Conversation saveConversation(String title, Long userDataId) {
         Conversation newConversation = Conversation.builder()
+                .userDataId(userDataId)
                 .title(title)
                 .build();
         return conversationRepository.save(newConversation);
