@@ -6,6 +6,7 @@ spring:
   mongodb:
     url: ${DB_URL}
     database: chat_memory_db
+    auto-index-creation: true
 
 logging:
   level:
