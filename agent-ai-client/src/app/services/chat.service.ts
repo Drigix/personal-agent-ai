@@ -5,6 +5,7 @@ import {map, Observable} from 'rxjs';
 import {ConversationModel} from '../models/conversation.model';
 import {ChatMessageModel} from '../models/chat-message.model';
 import { CHAT_SERVICE_URL } from '../config/server-connection.const';
+import { ConversationRequestBody } from '../models/conversation-request-body.model';
 
 @Injectable()
 export class ChatService {
@@ -44,21 +45,22 @@ export class ChatService {
       ));
   }
 
-  getConversations(): Observable<ConversationModel[]> {
+  getConversations(requestBody: ConversationRequestBody): Observable<ConversationModel[]> {
     const url = this.RESOURCE_URL + `getConversations`;
-    return this.httpClient.get<ConversationModel[]>(url).pipe(
+    return this.httpClient.post<ConversationModel[]>(url, requestBody).pipe(
       map(conversations => conversations.map(conv =>
         new ConversationModel(
           conv.id,
+          conv.userDataId,
           conv.title,
         )
       ))
     );
   }
 
-  getChatHistoryByConversationId(conversationId: string): Observable<ChatMessageModel[]> {
-    const url = this.RESOURCE_URL + `getChatHistoryByConversationId/${conversationId}`;
-    return this.httpClient.get<ChatMessageModel[]>(url).pipe(
+  getChatHistoryByConversationId(requestBody: ConversationRequestBody): Observable<ChatMessageModel[]> {
+    const url = this.RESOURCE_URL + `getChatHistoryByConversationId`;
+    return this.httpClient.post<ChatMessageModel[]>(url, requestBody).pipe(
       map(messages => messages.map(msg =>
         new ChatMessageModel(
           msg.id,

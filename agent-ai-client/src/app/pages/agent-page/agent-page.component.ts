@@ -26,6 +26,9 @@ import {AgentFileUploadComponent} from '../../shared/components/agent-file-uploa
 import {HttpErrorResponse} from '@angular/common/http';
 import {FileMetadataModel} from '../../models/file-metadata.model';
 import {MarkdownComponent} from 'ngx-markdown';
+import { UserAuthService } from '../../services/user-auth.service';
+import { UserDataModel } from '../../models/user-data.model';
+import { ConversationRequestBody } from '../../models/conversation-request-body.model';
 
 @Component({
   selector: 'agent-page',
@@ -52,14 +55,17 @@ export class AgentPageComponent implements OnInit {
   isLoading = signal<boolean>(false);
   chatResponseText = signal<string>('');
   displayedText = signal<string | undefined>('');
+  userData = signal<UserDataModel | null>(null);
 
   private chatService = inject(ChatService);
   private translateService = inject(TranslateService);
   private cd = inject(ChangeDetectorRef);
   private confirmationService = inject(ConfirmationService);
   private messageService = inject(MessageService);
+  private userAuthService = inject(UserAuthService);
 
   ngOnInit(): void {
+    this.userData.set(this.userAuthService.userData);
     this.loadConversations();
   }
 
@@ -114,7 +120,7 @@ export class AgentPageComponent implements OnInit {
       return;
     }
     if (this.isNewConversation()) {
-      const newConversation = new ConversationModel(undefined, this.prepareTitle(this.text()));
+      const newConversation = new ConversationModel(undefined, this.userData()?.userDataId, this.prepareTitle(this.text()));
       this.conversations().unshift(newConversation);
       this.selectedConversation.set(newConversation);
       this.isNewConversation.set(false);
@@ -157,7 +163,7 @@ export class AgentPageComponent implements OnInit {
   }
 
   private loadConversations(): void {
-    this.chatService.getConversations().subscribe({
+    this.chatService.getConversations(new ConversationRequestBody(undefined, this.userData()?.userDataId)).subscribe({
       next: (res: ConversationModel[]) => {
         this.conversations.set(res ?? []);
       },
@@ -168,7 +174,7 @@ export class AgentPageComponent implements OnInit {
   }
 
   private loadChatHistory(conversationId: string) {
-    this.chatService.getChatHistoryByConversationId(conversationId).subscribe({
+    this.chatService.getChatHistoryByConversationId(new ConversationRequestBody(conversationId, this.userData()?.userDataId)).subscribe({
       next: (res: ChatMessageModel[]) => {
         this.chatHistory.set(res ?? []);
         this.scrollToBottom();
