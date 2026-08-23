@@ -134,7 +134,7 @@ export class AgentPageComponent implements OnInit {
     this.displayedText.set('');
     this.scrollToBottom();
     const chatRequestBody = new ChatRequestBody(
-      this.selectedConversation()?.title, this.text(), newChatMessage.conversationId, newChatMessage.date
+      this.userData()?.userDataId, this.selectedConversation()?.title, this.text(), newChatMessage.conversationId, newChatMessage.date
     );
     this.text.set('');
     this.cd.detectChanges();

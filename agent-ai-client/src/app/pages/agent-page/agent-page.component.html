@@ -23,7 +23,7 @@
           } @else {
             <div class="grid">
               <span class="col-7 text-overflow-ellipsis">{{conversation.title}}</span>
-              <p-button class="col-4 p-0 m-0" id="deleteConversationBtn" icon="pi pi-trash" (onClick)="onDeleteConversationClicked(conversation?.id!); $event.stopPropagation()"></p-button>
+              <p-button class="col-4 p-0 m-0 flex justify-content-end align-items-center" id="deleteConversationBtn" icon="pi pi-trash" (onClick)="onDeleteConversationClicked(conversation?.id!); $event.stopPropagation()"></p-button>
             </div>
           }
         </div>
