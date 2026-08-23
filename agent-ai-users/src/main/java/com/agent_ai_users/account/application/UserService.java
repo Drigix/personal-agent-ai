@@ -6,6 +6,7 @@ import com.agent_ai_users.account.domain.repository.UserDataRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.apache.coyote.BadRequestException;
 
 import java.util.Optional;
 
@@ -28,5 +29,18 @@ public class UserService implements UserIngestPort {
     @Override
     public UserData save(@NonNull UserData user) {
         return userDataRepository.save(user);
+    }
+
+    @Override
+    public UserData  update(@NonNull UserData user) throws BadRequestException {
+        if (findByUsername(user.getUsername()).isPresent()) {
+            throw new BadRequestException("error.userWithUsernameAlreadyExists");
+        }
+        UserData dbUserData = userDataRepository.findById(user.getUserDataId()).orElse(null);
+        if (dbUserData == null) {
+            throw new BadRequestException("error.userNotFound");
+        }
+        dbUserData.setUsername(user.getUsername());
+        return userDataRepository.save(dbUserData);
     }
 }

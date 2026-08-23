@@ -89,4 +89,10 @@ public class UserAuthController {
         }
         return ResponseEntity.ok(userDataMapper.toDto(userData));
     }
+
+    @PutMapping(value = "/updateUserData")
+    public ResponseEntity<UserDataDTO> updateUserData(@RequestBody UserDataDTO userDataDTO) throws BadRequestException {
+        UserData userData = userService.update(userDataMapper.toEntity(userDataDTO));
+        return ResponseEntity.ok(userDataMapper.toDto(userData));
+    }
 }

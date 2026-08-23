@@ -10,6 +10,7 @@ import java.util.Set;
 public class UserDataDTO {
     private Long userDataId;
     private String username;
+    private String email;
     private boolean enabled;
     private Set<RoleDTO> roles;
 }

@@ -16,6 +16,11 @@ public class UserDataRepositoryImpl implements UserDataRepository {
     private final SpringDataUserDataRepository springDataUserDataRepository;
 
     @Override
+    public Optional<UserData> findById(@NonNull Long id) {
+        return springDataUserDataRepository.findById(id);
+    }
+
+    @Override
     public Optional<UserData> findByUsername(@NonNull String username) {
         return springDataUserDataRepository.findUserDataByUsername(username);
     }
