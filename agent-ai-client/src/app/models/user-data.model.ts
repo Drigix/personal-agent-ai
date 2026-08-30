@@ -4,6 +4,7 @@ export class UserDataModel {
     constructor(
         public userDataId: number,
         public username: string,
+        public email: string,
         public enabled: boolean,
         public roles: Set<RoleModel>
     ) {}

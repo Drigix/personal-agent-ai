@@ -66,6 +66,16 @@ export class UserAuthService {
     );
   }
 
+  updateUserData(userData: UserDataModel): Observable<UserDataModel> {
+    const url = this.RESOURCE_URL + "updateUserData";
+    return this.httpClient.put<UserDataModel>(url, userData).pipe(
+      map(updatedUserData => {
+        this._userData = updatedUserData;
+        return updatedUserData;
+      })
+    );
+  }
+
   activeUserDatChange(key: string): void {
     this.userDataChanges.next(key);
   }
