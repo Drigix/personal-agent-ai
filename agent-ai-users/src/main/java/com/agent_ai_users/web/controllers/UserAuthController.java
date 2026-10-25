@@ -82,10 +82,13 @@ public class UserAuthController {
 
 
     @GetMapping(value = "/getUserData")
-    public ResponseEntity<UserDataDTO> getUserData(@RequestParam String username) {
-        UserData userData = userService.findByUsername(username).orElse(null);
-        if  (userData == null) {
-            throw new UsernameNotFoundException(username);
+    public ResponseEntity<UserDataDTO> getUserData(@RequestParam String userDataId) throws BadRequestException {
+        if (StringUtils.isEmpty(userDataId)) {
+            throw new BadRequestException();
+        }
+        UserData userData = userService.findById(Long.valueOf(userDataId)).orElse(null);
+        if (userData == null) {
+            throw new UsernameNotFoundException("error.userNotFound");
         }
         return ResponseEntity.ok(userDataMapper.toDto(userData));
     }
