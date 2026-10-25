@@ -55,7 +55,13 @@ public class AuthenticationService implements AuthenticationIngestPort {
     }
 
     @Override
-    public @Nullable UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
+    public @Nullable UserDetails loadUserByUserDataId(@NonNull Long userDataId) throws UsernameNotFoundException {
+        return userIngestPort.findById(userDataId)
+                .orElse(null);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userIngestPort.findByUsername(username)
                 .orElse(null);
     }

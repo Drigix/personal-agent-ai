@@ -10,10 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 @Component
@@ -30,7 +27,7 @@ public class JwtUtils {
         this.expirationMs = expirationMs;
     }
 
-    public String extractUsername(String token) {
+    public String extractUserId(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -57,10 +54,11 @@ public class JwtUtils {
 
     public String generateToken(UserData userData) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("username", userData.getUsername());
         claims.put("roles", userData.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList());
-        return createToken(claims, userData.getUsername());
+        return createToken(claims, userData.getUserDataId().toString());
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
@@ -75,9 +73,9 @@ public class JwtUtils {
                 .compact();
     }
 
-    public boolean validateToken(String token, String username) {
-        final String extractedUsername = extractUsername(token);
-        return extractedUsername.equals(username) && !isTokenExpired(token);
+    public boolean validateToken(String token, Long userDataId) {
+        final Long extractedUserId = Long.valueOf(extractUserId(token));
+        return (Objects.equals(userDataId, extractedUserId)) && !isTokenExpired(token);
     }
 
     public Optional<Claims> tryExtractAllClaims(String token) {

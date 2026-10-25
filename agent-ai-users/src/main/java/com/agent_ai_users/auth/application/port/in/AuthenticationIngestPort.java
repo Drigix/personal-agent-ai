@@ -10,6 +10,6 @@ public interface AuthenticationIngestPort extends UserDetailsService {
     TokenPair authenticate(String username, String password, AuthenticationManager authenticationManager);
     TokenPair refresh(String refreshToken);
     void logout(String refreshToken);
-    UserDetails loadUserByUsername(String username);
+    UserDetails loadUserByUserDataId(Long userDataId);
     UserData registerUser(UserData user);
 }
