@@ -17,6 +17,11 @@ public class UserService implements UserIngestPort {
     private final UserDataRepository userDataRepository;
 
     @Override
+    public Optional<UserData> findById(@NonNull Long userDataId) {
+        return userDataRepository.findById(userDataId);
+    }
+
+    @Override
     public Optional<UserData> findByEmail(@NonNull String email) {
         return userDataRepository.findByEmail(email);
     }

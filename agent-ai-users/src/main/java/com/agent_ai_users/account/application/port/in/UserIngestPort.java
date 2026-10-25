@@ -6,6 +6,7 @@ import org.apache.coyote.BadRequestException;
 import java.util.Optional;
 
 public interface UserIngestPort {
+    Optional<UserData> findById(Long userDataId);
     Optional<UserData> findByEmail(String email);
     Optional<UserData> findByUsername(String username);
     UserData save(UserData user);
